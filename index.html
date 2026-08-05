@@ -712,30 +712,79 @@
     </footer>
 
     <div class="modal-overlay" id="guide-modal">
-        <div class="modal" style="width: 560px; max-width: 90vw;">
+        <div class="modal" style="width: 640px; max-width: 95vw;">
             <div class="modal-header">
-                <span>Guía del usuario</span>
+                <span>Guía del Usuario — Manual Práctico de TYPOFACE</span>
                 <button class="btn" id="btn-close-guide-modal" style="padding:2px 8px;">✕</button>
             </div>
-            <div class="modal-body guide-content" style="max-height: 70vh; overflow-y: auto;">
-                <p><strong>TypoFACE</strong> es una aplicación de retrato tipográfico que transforma una cara en una composición hecha exclusivamente con letras. El usuario sube una imagen de referencia y reconstruye manualmente el rostro sobre el lienzo utilizando solo las letras contenidas en el nombre y los apellidos de la persona retratada. No está permitido usar otras letras distintas.</p>
-                <p>El proceso es manual y creativo: la imagen funciona como <strong>plantilla guía</strong>, y el usuario selecciona, coloca, rota, escala y colorea letras sobre el lienzo hasta construir una cara reconocible. La herramienta también permite trabajar por capas y, si se desea, generar una animación fotograma a fotograma del resultado.</p>
+            <div class="modal-body guide-content" style="max-height: 75vh; overflow-y: auto;">
+                <p><strong>TypoFACE</strong> es una aplicación web profesional de animación tipográfica frame a frame y retrato experimental orientada a la creación de composiciones visuales faciales y artísticas compuestas exclusivamente mediante caracteres tipográficos.</p>
                 
-                <h3>Sección 1 — Regla principal</h3>
-                <p>La regla esencial del proyecto es la <strong>restricción tipográfica por identidad</strong>: solo pueden usarse letras incluidas en el nombre y apellido o los dos apellidos del sujeto retratado. Esto implica que la composición no se basa en cualquier alfabeto disponible, sino en un conjunto limitado de caracteres que obliga a resolver el retrato con las letras autorizadas.</p>
+                <h3>1. Introducción y Restricción Tipográfica por Identidad</h3>
+                <p>La esencia de TYPOFACE radica en la fidelidad identitaria: la composición de un rostro debe construirse de manera manual utilizando únicamente las letras presentes en el nombre y los apellidos de la persona retratada. Esta restricción creativa obliga a reutilizar, escalar y rotar inteligentemente los glifos autorizados.</p>
                 
-                <h3>Sección 2 — Funciones principales y Biblioteca Tipográfica</h3>
-                <p>La aplicación integra una potente <strong>biblioteca de fuentes serif profesionales</strong> cargadas vía Google Fonts junto con fuentes clásicas del sistema y la posibilidad de <strong>cargar fuentes locales en formatos OTF, TTF o WOFF</strong> mediante la API web estándar.</p>
-                
-                <h3>Sección 3 — Interfaz y personalización</h3>
-                <p>La barra superior y los controles de acceso rápido optimizan el flujo de trabajo en la interfaz:</p>
+                <h3>2. Biblioteca Tipográfica y Fuentes Personalizadas</h3>
                 <ul>
-                    <li><strong>Tema claro / oscuro</strong>: alterna el aspecto de toda la interfaz. La preferencia se guarda automáticamente.</li>
-                    <li><strong>Guardar / Abrir proyecto (JSON)</strong>: botones del header para guardar el proyecto completo en un archivo <code>.json</code> y recuperarlo más tarde.</li>
+                    <li><strong>Google Fonts y Fuentes del Sistema</strong>: Acceso integrado a fuentes serif y editoriales de alta calidad (Playfair Display, EB Garamond, Cormorant Garamond, Libre Baskerville, Cinzel, Merriweather, Times New Roman, Georgia, etc.).</li>
+                    <li><strong>Carga de Fuentes Locales</strong>: Posibilidad de incorporar archivos de fuentes propios en formatos estándar <code>.otf</code>, <code>.ttf</code>, <code>.woff</code> o <code>.woff2</code> mediante la API del navegador.</li>
+                    <li><strong>Control de Estilos y Pesos</strong>: Selector dinámico para alternar entre pesos regulares, itálicos, negritas y negritas itálicas.</li>
                 </ul>
+
+                <h3>3. Buscador, Selector de Caracteres y Filtro por Identidad</h3>
+                <ul>
+                    <li><strong>Buscador en Tiempo Real</strong>: Permite filtrar rápidamente cualquier símbolo, número o letra dentro de la parrilla de caracteres disponibles.</li>
+                    <li><strong>Filtro Dinámico por Nombre y Apellidos</strong>: Al introducir el nombre y apellidos en el campo correspondiente (situado en la barra de la línea de tiempo), la aplicación analiza la identidad, desactiva automáticamente los glifos no autorizados y resalta únicamente las letras permitidas por la regla principal.</li>
+                </ul>
+
+                <h3>4. Lienzo, Plantilla Guía y Controles del Canvas</h3>
+                <p>La barra de herramientas flotante del lienzo (<code>.canvas-toolbar</code>) agrupa todas las utilidades visuales de apoyo:</p>
+                <ul>
+                    <li><strong>Cargar Plantilla Guía</strong>: Permite subir cualquier imagen de referencia fotográfica para calcar y reconstruir el rostro.</li>
+                    <li><strong>Opacidad y Zoom de la Guía</strong>: Ajuste preciso de la visibilidad y escala de la imagen de referencia sobre el área de trabajo.</li>
+                    <li><strong>Encajar con Tamaño</strong>: Opción para vincular proporcionalmente la escala de las letras tipográficas al factor de zoom de la plantilla guía.</li>
+                    <li><strong>Fondo Transparente y Selector de Color</strong>: Permite alternar un fondo transparente en el lienzo o definir cualquier color sólido de fondo mediante el selector integrado.</li>
+                </ul>
+
+                <h3>5. Inspector de Propiedades y Panel de Capas</h3>
+                <ul>
+                    <li><strong>Manipulación Directa y Tiradores</strong>: Selección de letras mediante clic o arrastre directo en el lienzo, con tiradores geométricos para rotar, escalar y mover elementos con precisión milimétrica.</li>
+                    <li><strong>Inspector Numérico</strong>: Control exacto de posición (X, Y), tamaño en píxeles, ángulo de rotación exacto, color tipográfico personalizado y opacidad por objeto.</li>
+                    <li><strong>Duplicación y Eliminación</strong>: Opciones rápidas para clonar elementos tipográficos existentes o borrarlos de la composición.</li>
+                    <li><strong>Gestión de Capas</strong>: Panel dedicado para visualizar la jerarquía de los caracteres presentes en el fotograma actual y seleccionarlos de forma individual.</li>
+                </ul>
+
+                <h3>6. Línea de Tiempo y Animación Fotograma a Fotograma</h3>
+                <ul>
+                    <li><strong>Gestión de Fotogramas</strong>: Creación, duplicación y eliminación de frames secuenciales para construir animaciones fluidas.</li>
+                    <li><strong>Onion Skin (Piel de Cebolla)</strong>: Visualización semitransparente del fotograma anterior superpuesta en el lienzo para facilitar la transición y el movimiento de los caracteres.</li>
+                    <li><strong>Control de Reproducción y FPS</strong>: Ajuste de la velocidad de animación de 1 a 30 FPS y reproducción en bucle directo con vista previa en miniatura de cada fotograma.</li>
+                </ul>
+
+                <h3>7. Gestión de Proyectos y Preferencias de Interfaz</h3>
+                <ul>
+                    <li><strong>Tema Claro / Oscuro</strong>: Alternancia de interfaz optimizada con guardado automático de preferencias en <code>localStorage</code>.</li>
+                    <li><strong>Guardar y Abrir JSON</strong>: Funcionalidad completa para exportar el proyecto entero a un archivo de datos <code>.json</code> e importarlo posteriormente para continuar editándolo.</li>
+                    <li><strong>Historial de Acciones</strong>: Sistema robusto de Deshacer (<code>Ctrl+Z</code>) y Rehacer (<code>Ctrl+Shift+Z</code>).</li>
+                </ul>
+
+                <h3>8. Sistema Avanzado de Exportación (GIF y ZIP)</h3>
+                <ul>
+                    <li><strong>Formatos Múltiples</strong>: Exportación directa a GIF animado (con codificador LZW nativo integrado) o paquetes comprimidos en ZIP conteniendo secuencias de imágenes JPG o PNG (con soporte para mantener fondo transparente).</li>
+                    <li><strong>Selectores de Resolución Profesional</strong>: Opciones de tamaño adaptadas a múltiples formatos y pantallas (Original 800x600, Full HD 16:9, Vertical 9:16 para TikTok/Reels/Stories, Cuadrado 1:1 para Instagram, 4:5, 4K UHD, UltraWide, etc.).</li>
+                    <li><strong>Efectos Especiales de Animación y Postprocesado</strong>:
+                        <ul>
+                            <li>Transiciones de Fundido (Fade / Crossfade) entre fotogramas con selector de pasos intermedios.</li>
+                            <li>Desenfoque de movimiento (Motion Blur) con diferentes intensidades.</li>
+                            <li>Efecto Pixel Art (Pixelation) con factores de escala ajustables (2x, 4x, 8x).</li>
+                            <li>Efecto Negativo / Inversión de colores.</li>
+                            <li>Opción para incluir o descartar la plantilla guía base en la exportación final.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p class="guide-closing">TYPOFACE combina el diseño gráfico vectorial y tipográfico con la animación secuencial, ofreciendo una herramienta creativa robusta, autocontenida y profesional para artistas visuales y diseñadores.</p>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" id="btn-close-guide-footer">Cerrar</button>
+                <button class="btn btn-primary" id="btn-close-guide-footer">Cerrar Guía</button>
             </div>
         </div>
     </div>
@@ -1877,9 +1926,6 @@
                 }
             });
 
-            // ==========================================
-            // INTEGRACIÓN: GUARDAR Y CARGAR PROYECTO JSON
-            // ==========================================
             const btnSaveJson = document.getElementById('btn-save-json');
             const btnLoadJson = document.getElementById('btn-load-json');
             const fileJson = document.getElementById('file-json');
@@ -1981,7 +2027,6 @@
                 };
                 reader.readAsText(file);
             });
-            // ==========================================
 
             const exportModal = document.getElementById('export-modal');
             const progressBar = document.getElementById('export-progress-bar');
