@@ -602,13 +602,19 @@
                     <span id="zoom-val">100%</span>
                 </span>
 
-                <!-- NUEVO CONTROL: Checkbox Encajar con tamaño -->
                 <label class="text-xs text-muted flex items-center gap-2 cursor-pointer" title="Escala las letras proporcionalmente con el zoom de la plantilla guía">
                     <input type="checkbox" id="chk-lock-scale"> Encajar con tamaño
                 </label>
 
                 <button class="btn" id="btn-toggle-ref">Ocultar Guía</button>
                 
+                <span style="width: 1px; height: 16px; background: var(--border-color); margin: 0 4px;"></span>
+                
+                <!-- UNIFIED TRANSPARENT BACKGROUND CHECKBOX -->
+                <label class="text-xs text-muted flex items-center gap-2 cursor-pointer" title="Activa el fondo transparente en el lienzo y exportación PNG">
+                    <input type="checkbox" id="chk-transparent-ui"> Fondo transparente
+                </label>
+
                 <span style="width: 1px; height: 16px; background: var(--border-color); margin: 0 4px;"></span>
                 <span class="text-xs text-muted flex items-center gap-2">
                     Fondo:
@@ -703,7 +709,7 @@
     </div>
     
     <footer>
-        Idea Xinanimodelacra, desarrollo by <a href="https://www.marcxicola.com" target="_blank" rel="noopener noreferrer">www.marcxicola.com</a>
+        Idea Xinanimodelacra, development by <a href="https://www.marcxicola.com" target="_blank" rel="noopener noreferrer">www.marcxicola.com</a>[cite: 1]
     </footer>
 
     <div class="modal-overlay" id="guide-modal">
@@ -732,7 +738,7 @@
                             <li>Ajuste de opacidad y botón para ocultar o mostrar la guía.</li>
                         </ul>
                     </li>
-                    <li><strong>Fondo configurable</strong> del lienzo, <strong>inspector de propiedades</strong> y <strong>panel de capas</strong> para organizar la composición.</li>
+                    <li><strong>Fondo configurable</strong> del lienzo (con opción de fondo transparente mediante patrón ajedrezado), <strong>inspector de propiedades</strong> y <strong>panel de capas</strong> para organizar la composición.</li>
                 </ul>
                 
                 <h3>Sección 3 — Interfaz y personalización</h3>
@@ -752,9 +758,10 @@
                 <h3>Sección 6 — Exportación</h3>
                 <p>La sección de exportación permite generar el resultado en varios formatos: <strong>GIF animado</strong>, <strong>frames JPG en archivo ZIP</strong> o <strong>frames PNG en ZIP</strong>. Además, incluye un selector avanzado de <strong>tamaño de exportación</strong>:</p>
                 <ul>
-                    <li><strong>Presets de tamaño</strong>: además del tamaño original del lienzo (800×600), se puede exportar en presets para redes sociales y gran formato: Full HD 16:9 (1920×1080), Vertical 9:16 (1080×1920, TikTok/Reels/Stories), Cuadrado 1:1 (1080×1080), Retrato 4:5 (1080×1350), Clásico 4:3 (1600×1200), UltraWide 21:9 (2560×1080) y 4K UHD (3840×2160). La composición se escala proporcionalmente y centrada, sin deformarse, respetando el color de fondo elegido.</li>
+                    <li><strong>Presets de tamaño</strong>: además del tamaño original del lienzo (800×600), se puede exportar en presets para redes sociales y gran formato: Full HD 16:9 (1920×1080), Vertical 9:16 (1080×1920, TikTok/Reels/Stories), Cuadrado 1:1 (1080×1080), Retrato 4:5 (1080×1350), Clásico 4:3 (1600×1200), UltraWide 21:9 (2560×1080) y 4K UHD (3840×2160). La composición se escala proporcionalmente y centrada, sin deformarse, respetando el color de fondo elegido (salvo al exportar con transparencia en PNG).</li>
+                    <li><strong>Fondo transparente (PNG)</strong>: el formato PNG soporta canal alfa completo. Al activar la opción de “Fondo transparente” (desde la barra del lienzo o en el modal), las imágenes exportadas en PNG contienen píxeles de fondo verdaderamente vacíos con canal alfa real, ideales para componer sobre otros colores sin halos ni fondos residuales. Los formatos GIF y JPG utilizan fondo sólido (el GIF mantiene fondo sólido para evitar artefactos de color en la paleta).</li>
                     <li><strong>Plantilla guía en exportación</strong>: la plantilla guía (si se incluye) se exporta con el mismo encuadre, proporción y zoom que se ve en pantalla.</li>
-                    <li>Opciones adicionales como mantener el <strong>fondo transparente</strong> (en PNG), definir la velocidad de animación en <strong>FPS</strong> e incluir la imagen plantilla base en la exportación final.</li>
+                    <li>Opciones adicionales como definir la velocidad de animación en <strong>FPS</strong> e incluir la imagen plantilla base en la exportación final.</li>
                 </ul>
                 
                 <p class="guide-closing">El funcionamiento se basa en una lógica visual y conceptual: cuanto más fiel sea el retrato y más estrictamente se respeten las letras del nombre y apellidos, más sólida será la pieza final.</p>
@@ -1008,6 +1015,7 @@
                 width: 800,
                 height: 600,
                 bgColor: "#000000",
+                transparentBackgroundUI: false,
                 referenceImage: { 
                     img: null, 
                     src: null, 
@@ -1036,6 +1044,32 @@
             const framesContainer = document.getElementById('frames-container');
             const frameCounter = document.getElementById('frame-counter');
             const bgColorPicker = document.getElementById('bg-color-picker');
+            
+            const chkTransparentUi = document.getElementById('chk-transparent-ui');
+            const chkTransparentBg = document.getElementById('chk-transparent-bg');
+            const pngOptionsBox = document.getElementById('export-png-options');
+
+            function updateTransparentState(isTransparent) {
+                state.transparentBackgroundUI = isTransparent;
+                if (chkTransparentUi) chkTransparentUi.checked = isTransparent;
+                if (chkTransparentBg) chkTransparentBg.checked = isTransparent;
+                
+                const pngRadio = document.querySelector('input[name="export-type"][value="png"]');
+                if (isTransparent && pngRadio) {
+                    pngRadio.checked = true;
+                    pngOptionsBox.style.display = 'block';
+                }
+                redraw();
+                renderFrames();
+            }
+
+            chkTransparentUi.addEventListener('change', (e) => {
+                updateTransparentState(e.target.checked);
+            });
+
+            chkTransparentBg.addEventListener('change', (e) => {
+                updateTransparentState(e.target.checked);
+            });
             
             const noSelectionMsg = document.getElementById('no-selection-msg');
             const inspectorControls = document.getElementById('inspector-controls');
@@ -1215,7 +1249,6 @@
                 updateInspector();
             }
 
-            // FUNCIÓN HELPER CENTRALIZADA PARA ESCALA DE LETRAS
             function getLetterScaleFactor() {
                 if (state.referenceImage.lockScale) {
                     return state.referenceImage.zoom / 100;
@@ -1223,7 +1256,6 @@
                 return 1;
             }
 
-            // REUSABLE HELPER FUNCTION FOR REFERENCE IMAGE TRANSFORMATION
             function getRefImageTransform() {
                 const img = state.referenceImage.img;
                 if (!img) return null;
@@ -1238,9 +1270,11 @@
             }
 
             function redraw(renderForExport = false, overrideRefShow = false, transparentBg = false) {
+                const isTransparent = renderForExport ? transparentBg : state.transparentBackgroundUI;
+
                 ctx.clearRect(0, 0, state.width, state.height);
 
-                if (!transparentBg) {
+                if (!isTransparent) {
                     ctx.fillStyle = state.bgColor;
                     ctx.fillRect(0, 0, state.width, state.height);
                 }
@@ -1533,7 +1567,6 @@
                     img.onload = () => {
                         state.referenceImage.img = img;
                         state.referenceImage.src = event.target.result;
-                        // Reset zoom and lockScale on new template load as requested
                         state.referenceImage.zoom = 100;
                         refZoom.value = 100;
                         zoomVal.textContent = '100%';
@@ -1603,8 +1636,10 @@
                         if (tCv) {
                             const tCtx = tCv.getContext('2d');
                             tCtx.clearRect(0, 0, 48, 36);
-                            tCtx.fillStyle = state.bgColor;
-                            tCtx.fillRect(0, 0, 48, 36);
+                            if (!state.transparentBackgroundUI) {
+                                tCtx.fillStyle = state.bgColor;
+                                tCtx.fillRect(0, 0, 48, 36);
+                            }
                             
                             tCtx.save();
                             tCtx.scale(48 / state.width, 36 / state.height);
@@ -1677,9 +1712,13 @@
             const progressBar = document.getElementById('export-progress-bar');
             const progressFill = document.getElementById('export-progress-fill');
             const statusText = document.getElementById('export-status-text');
-            const pngOptionsBox = document.getElementById('export-png-options');
 
             document.getElementById('btn-open-export').addEventListener('click', () => {
+                chkTransparentBg.checked = state.transparentBackgroundUI;
+                if (state.transparentBackgroundUI) {
+                    pngOptionsBox.style.display = 'block';
+                    document.querySelector('input[name="export-type"][value="png"]').checked = true;
+                }
                 exportModal.style.display = 'flex';
                 progressBar.style.display = 'none';
                 progressFill.style.width = '0%';
@@ -1695,7 +1734,10 @@
                         pngOptionsBox.style.display = 'block';
                     } else {
                         pngOptionsBox.style.display = 'none';
-                        document.getElementById('chk-transparent-bg').checked = false;
+                        chkTransparentBg.checked = false;
+                        state.transparentBackgroundUI = false;
+                        if (chkTransparentUi) chkTransparentUi.checked = false;
+                        redraw();
                     }
                 });
             });
@@ -1704,7 +1746,7 @@
                 const exportType = document.querySelector('input[name="export-type"]:checked').value;
                 const fps = parseInt(document.getElementById('export-fps').value) || 10;
                 const includeRef = document.getElementById('chk-include-ref').checked;
-                const transparentBg = document.getElementById('chk-transparent-bg').checked && exportType === 'png';
+                const transparentBg = chkTransparentBg.checked && exportType === 'png';
 
                 const exportSizeVal = document.getElementById('export-size-select').value;
                 const [destW, destH] = exportSizeVal.split('x').map(Number);
