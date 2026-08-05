@@ -614,8 +614,14 @@
                 
                 <span class="text-xs text-muted flex items-center gap-2">
                     Opacidad:
-                    <input type="range" id="ref-opacity" min="0" max="100" value="40" style="width: 70px;">
+                    <input type="range" id="ref-opacity" min="0" max="100" value="40" style="width: 60px;">
                     <span id="opacity-val">40%</span>
+                </span>
+
+                <span class="text-xs text-muted flex items-center gap-2">
+                    Zoom:
+                    <input type="range" id="ref-zoom" min="100" max="300" value="100" style="width: 60px;">
+                    <span id="zoom-val">100%</span>
                 </span>
 
                 <button class="btn" id="btn-toggle-ref">Ocultar Guía</button>
@@ -742,7 +748,7 @@
                 <p>La aplicación integra una potente <strong>biblioteca de fuentes serif profesionales</strong> cargadas vía Google Fonts (Playfair Display, EB Garamond, Cormorant Garamond, Libre Baskerville, Cinzel, Merriweather) junto con fuentes clásicas del sistema (Times New Roman, Georgia, Arial, Courier New) y la posibilidad de <strong>cargar fuentes locales en formatos OTF, TTF o WOFF</strong> mediante la API web estándar.</p>
                 <ul>
                     <li>Elección precisa de <strong>estilo y peso real</strong>: Regular, Italic, Bold y Bold Italic con archivos tipográficos genuinos.</li>
-                    <li><strong>Plantilla guía</strong>: puedes cargar una imagen de referencia, ajustar su opacidad y ocultarla cuando ya no la necesites.</li>
+                    <li><strong>Plantilla guía</strong>: puedes cargar una imagen de referencia, ajustar su opacidad, aplicar zoom proporcional y ocultarla cuando ya no la necesites.</li>
                     <li><strong>Fondo configurable</strong> del lienzo, <strong>inspector de propiedades</strong> y <strong>panel de capas</strong> para organizar la composición.</li>
                 </ul>
                 
@@ -1017,7 +1023,7 @@
                 width: 800,
                 height: 600,
                 bgColor: "#000000",
-                referenceImage: { img: null, src: null, opacity: 0.4, visible: true },
+                referenceImage: { img: null, src: null, opacity: 0.4, zoom: 100, visible: true },
                 frames: [{ id: 1, objects: [] }],
                 currentFrameIndex: 0,
                 selectedObjectId: null,
@@ -1063,16 +1069,11 @@
 
                 const fontTestString = `${style} ${weight} 16px "${fontFamily}"`;
                 
-                // Comprobación de disponibilidad para fuentes de sistema
                 const systemFonts = ['Times New Roman', 'Arial', 'Georgia', 'Courier New', 'Bodoni MT', 'Garamond'];
                 if (systemFonts.includes(fontFamily)) {
-                    if (!document.fonts.check(fontTestString)) {
-                        console.warn(`[Typography] Fuente de sistema "${fontFamily}" no disponible localmente. Usando fallback.`);
-                    }
                     return;
                 }
 
-                // Carga mediante Font Loading API con indicador visual
                 try {
                     fontLoadStatus.style.display = 'inline';
                     await document.fonts.load(fontTestString);
@@ -1093,7 +1094,6 @@
             fontSelect.addEventListener('change', handleFontChange);
             fontStyleSelect.addEventListener('change', handleFontChange);
 
-            // Cargar fuente local OTF/TTF/WOFF con la API FontFace
             const customFontFile = document.getElementById('custom-font-file');
             customFontFile.addEventListener('change', async (e) => {
                 const file = e.target.files[0];
@@ -1122,7 +1122,7 @@
                     renderFrames();
                 } catch (err) {
                     console.error("Error al cargar fuente local:", err);
-                    alert("Error al cargar el archivo de fuente. Asegúrate de que sea un formato válido (.otf, .ttf, .woff, .woff2).");
+                    alert("Error al cargar el archivo de fuente.");
                     fontLoadStatus.style.display = 'none';
                     fontLoadStatus.textContent = 'Cargando...';
                 }
@@ -1136,7 +1136,6 @@
                 'à','è','é','í','ï','ò','ó','ú','ü','ç','ñ','¿','¡','«','»','“','”'
             ];
 
-            // Normalización para eliminar acentos
             function removeDiacritics(str) {
                 return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
             }
@@ -1147,7 +1146,6 @@
                 renderFrames();
             });
 
-            // Renderizado inteligente del grid de caracteres combinando Buscador + Filtro por Nombre
             function renderCharGrid() {
                 const searchVal = charSearch.value.toLowerCase();
                 const nameVal = nameFilterInput.value.trim();
@@ -1229,8 +1227,20 @@
             }
 
             // ==========================================
-            // 4. MOTOR DE RENDERIZADO Y CONTROL CURSOR
+            // 4. MOTOR DE RENDERIZADO Y CONTROL DE PLANTILLA
             // ==========================================
+
+            // Función reutilizable para calcular la transformación proporcional "contain" con zoom y centrado
+            function getRefImageTransform(img, targetWidth, targetHeight, zoomPercent) {
+                const baseScale = Math.min(targetWidth / img.width, targetHeight / img.height);
+                const finalScale = baseScale * (zoomPercent / 100);
+                const w = img.width * finalScale;
+                const h = img.height * finalScale;
+                const x = (targetWidth - w) / 2;
+                const y = (targetHeight - h) / 2;
+                return { x, y, w, h };
+            }
+
             function redraw(renderForExport = false, overrideRefShow = false, transparentBg = false) {
                 ctx.clearRect(0, 0, state.width, state.height);
 
@@ -1242,8 +1252,14 @@
                 const showRef = renderForExport ? overrideRefShow : state.referenceImage.visible;
                 if (showRef && state.referenceImage.img) {
                     ctx.save();
+                    // Recorte por bordes si el zoom supera el 100%
+                    ctx.beginPath();
+                    ctx.rect(0, 0, state.width, state.height);
+                    ctx.clip();
+
                     ctx.globalAlpha = state.referenceImage.opacity;
-                    ctx.drawImage(state.referenceImage.img, 0, 0, state.width, state.height);
+                    const t = getRefImageTransform(state.referenceImage.img, state.width, state.height, state.referenceImage.zoom);
+                    ctx.drawImage(state.referenceImage.img, t.x, t.y, t.w, t.h);
                     ctx.restore();
                 }
 
@@ -1474,12 +1490,14 @@
             }
 
             // ==========================================
-            // 6. GESTIÓN DE PLANTILLA BASE DE REFERENCIA
+            // 6. GESTIÓN DE PLANTILLA BASE Y ZOOM
             // ==========================================
             const btnUploadRef = document.getElementById('btn-upload-ref');
             const refImgInput = document.getElementById('ref-img-input');
             const refOpacity = document.getElementById('ref-opacity');
             const opacityVal = document.getElementById('opacity-val');
+            const refZoom = document.getElementById('ref-zoom');
+            const zoomVal = document.getElementById('zoom-val');
             const btnToggleRef = document.getElementById('btn-toggle-ref');
 
             btnUploadRef.addEventListener('click', () => refImgInput.click());
@@ -1492,6 +1510,9 @@
                     img.onload = () => {
                         state.referenceImage.img = img;
                         state.referenceImage.src = event.target.result;
+                        state.referenceImage.zoom = 100;
+                        refZoom.value = 100;
+                        zoomVal.textContent = '100%';
                         redraw();
                     };
                     img.src = event.target.result;
@@ -1503,6 +1524,13 @@
                 const val = e.target.value;
                 opacityVal.textContent = `${val}%`;
                 state.referenceImage.opacity = val / 100;
+                redraw();
+            });
+
+            refZoom.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value, 10);
+                zoomVal.textContent = `${val}%`;
+                state.referenceImage.zoom = val;
                 redraw();
             });
 
@@ -1653,7 +1681,6 @@
                 progressBar.style.display = 'block';
                 statusText.textContent = 'Verificando fuentes para exportación...';
 
-                // Garantizar que todas las fuentes usadas en los frames estén cargadas antes de exportar
                 const fontPromises = [];
                 state.frames.forEach(frame => {
                     frame.objects.forEach(obj => {
@@ -1714,7 +1741,7 @@
 
                 } else {
                     if (typeof JSZip === 'undefined') {
-                        alert("Error: No se pudo cargar la librería JSZip (Revisa la conexión a Internet).");
+                        alert("Error: No se pudo cargar la librería JSZip.");
                         return;
                     }
                     
@@ -1791,9 +1818,7 @@
                 });
             });
 
-            // Precarga inicial de la fuente por defecto
             ensureFontLoaded(fontSelect.value, fontStyleSelect.value);
-
             renderFrames();
             redraw();
         });
