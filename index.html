@@ -226,6 +226,12 @@
             color: var(--accent);
             transform: scale(1.05);
         }
+        .char-item.disabled {
+            opacity: 0.25;
+            pointer-events: none;
+            filter: grayscale(80%);
+            cursor: not-allowed;
+        }
 
         /* Area Central / Viewport Canvas */
         .canvas-area {
@@ -256,7 +262,6 @@
 
         #viewport-canvas {
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
-            /* Patrón ajedrezado para visualizar transparencias reales */
             background-color: var(--bg-base);
             background-image: 
                 linear-gradient(45deg, #1f2128 25%, transparent 25%),
@@ -286,6 +291,8 @@
             justify-content: space-between;
             border-bottom: 1px solid var(--border-color);
             background: var(--bg-panel);
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .frames-container {
@@ -314,7 +321,6 @@
         .frame-thumb:hover { border-color: var(--text-muted); }
         .frame-thumb.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
         .frame-thumb span { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
-        /* Los fondos de los canvas miniaturas se gestionarán vía JS ahora */
         .frame-thumb canvas { width: 48px; height: 36px; border-radius: 2px; } 
 
         /* Inspector & Layers */
@@ -351,7 +357,41 @@
         }
         .layer-item.selected { border-color: var(--accent); background: rgba(59, 130, 246, 0.08); }
 
-        /* Modal Exportación */
+        /* Estilos específicos para la Guía del Usuario (Feature 1) */
+        .guide-content h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 14px 0 6px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .guide-content p {
+            font-size: 12px;
+            color: var(--text-main);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        .guide-content ul {
+            font-size: 12px;
+            color: var(--text-main);
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        .guide-content li {
+            margin-bottom: 4px;
+        }
+        .guide-content strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+        .guide-content .guide-closing {
+            font-style: italic;
+            color: var(--text-muted);
+            margin-top: 14px;
+        }
+
+        /* Modal Genérico / Guía / Exportación */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -452,6 +492,9 @@
             <button class="btn" id="btn-save-json">Guardar JSON</button>
             <button class="btn" id="btn-load-json">Abrir JSON</button>
             <input type="file" id="file-json" accept=".json" style="display: none;">
+            <span style="width: 1px; height: 20px; background: var(--border-color);"></span>
+            <!-- Botón de Guía de Usuario (Feature 1) -->
+            <button class="btn" id="btn-open-guide" title="Guía del usuario" style="padding: 6px 10px; font-weight: 700;">?</button>
         </div>
 
         <div class="toolbar-group">
@@ -519,7 +562,6 @@
 
                 <button class="btn" id="btn-toggle-ref">Ocultar Guía</button>
                 
-                <!-- Selector de color de fondo del Workbench -->
                 <span style="width: 1px; height: 16px; background: var(--border-color); margin: 0 4px;"></span>
                 <span class="text-xs text-muted flex items-center gap-2">
                     Fondo:
@@ -596,6 +638,11 @@
                     <button class="btn" id="btn-dup-frame">Duplicar Frame</button>
                     <button class="btn" id="btn-del-frame" style="color: var(--danger);">Eliminar Frame</button>
                 </div>
+                <!-- Filtro de letras por nombre y apellido/s (Feature 2) -->
+                <div class="toolbar-group" style="gap: 4px;">
+                    <input type="text" id="name-filter-input" class="input-custom text-xs" placeholder="Introduce nombre y apellido/s" style="width: 210px;">
+                    <button class="btn" id="btn-clear-name-filter" title="Limpiar filtro" style="padding: 6px 8px;">✕</button>
+                </div>
                 <div class="toolbar-group">
                     <label class="text-xs text-muted flex items-center gap-2">
                         <input type="checkbox" id="chk-onion" checked> Onion Skin (Transparencia)
@@ -617,6 +664,46 @@
     <footer>
         Idea Xinanimodelacra, desarrollo by <a href="https://www.marcxicola.com" target="_blank" rel="noopener noreferrer">www.marcxicola.com</a>
     </footer>
+
+    <!-- Modal de Guía del Usuario (Feature 1) -->
+    <div class="modal-overlay" id="guide-modal">
+        <div class="modal" style="width: 560px; max-width: 90vw;">
+            <div class="modal-header">
+                <span>Guía del usuario</span>
+                <button class="btn" id="btn-close-guide-modal" style="padding:2px 8px;">✕</button>
+            </div>
+            <div class="modal-body guide-content" style="max-height: 70vh; overflow-y: auto;">
+                <p><strong>TypoFACE</strong> es una aplicación de retrato tipográfico que transforma una cara en una composición hecha exclusivamente con letras. El usuario sube una imagen de referencia y reconstruye manualmente el rostro sobre el lienzo utilizando solo las letras contenidas en el nombre y los apellidos de la persona retratada. No está permitido usar otras letras distintas.</p>
+                <p>El proceso es manual y creativo: la imagen funciona como <strong>plantilla guía</strong>, y el usuario selecciona, coloca, rota, escala y colorea letras sobre el lienzo hasta construir una cara reconocible. La herramienta también permite trabajar por capas y, si se desea, generar una animación fotograma a fotograma del resultado.</p>
+                
+                <h3>Section 1 — Regla principal</h3>
+                <p>La regla esencial del proyecto es la <strong>restricción tipográfica por identidad</strong>: solo pueden usarse letras incluidas en el nombre y apellido o los dos apellidos del sujeto retratado. Esto implica que la composición no se basa en cualquier alfabeto disponible, sino en un conjunto limitado de caracteres que obliga a resolver el retrato con las letras autorizadas.</p>
+                <p>Por ejemplo, si el nombre fuese "Ana Pérez", la construcción del rostro tendría que hacerse únicamente con las letras presentes en "Ana Pérez", repitiéndolas cuantas veces haga falta, pero sin incorporar otras nuevas. La aplicación ofrece un campo de <strong>nombre y apellidos</strong> que activa automáticamente solo las letras autorizadas, además de un <strong>buscador de caracteres</strong> para facilitar ese trabajo.</p>
+                
+                <h3>Section 2 — Funciones principales</h3>
+                <ul>
+                    <li><strong>Biblioteca tipográfica</strong> con varias familias predefinidas: Times New Roman, Bodoni, Georgia, Garamond, Cinzel/Trajan, Arial y Courier New, además de la opción de cargar una fuente local (OTF, TTF, WOFF).</li>
+                    <li>Elección de <strong>estilo o peso</strong>: Regular, Italic, Bold y Bold Italic.</li>
+                    <li><strong>Plantilla guía</strong>: puedes cargar una imagen de referencia, ajustar su opacidad y ocultarla cuando ya no la necesites.</li>
+                    <li><strong>Fondo configurable</strong> del lienzo, <strong>inspector de propiedades</strong> y <strong>panel de capas</strong> para organizar la composición.</li>
+                </ul>
+                
+                <h3>Section 3 — Edición en lienzo</h3>
+                <p>Cuando seleccionas una letra en el lienzo, el inspector permite modificar sus propiedades: posición X, posición Y, tamaño/escala, ángulo de rotación, color y opacidad. También existen acciones directas para duplicar o borrar el elemento activo, lo que agiliza la construcción del retrato a partir de módulos tipográficos repetidos. El panel de capas ayuda a controlar la superposición de letras y a ordenar la imagen final.</p>
+                
+                <h3>Section 4 — Animación</h3>
+                <p>La aplicación incorpora un sistema de animación por fotogramas con opciones como "+ Añadir Fotograma", "Duplicar Frame", "Eliminar Frame", control de <strong>Onion Skin</strong>, ajuste de <strong>FPS</strong> y reproducción mediante el botón "▶ Reproducir". El contador de estado ("Frame 1 / 1") indica la posición en la línea de tiempo.</p>
+                
+                <h3>Section 5 — Exportación</h3>
+                <p>La sección de exportación permite generar el resultado en varios formatos: <strong>GIF animado</strong>, <strong>frames JPG en archivo ZIP</strong> o <strong>frames PNG en ZIP</strong>. Además, opciones para mantener el <strong>fondo transparente</strong> (PNG), definir la velocidad de animación en <strong>FPS</strong> e incluir la imagen plantilla base en la exportación final.</p>
+                
+                <p class="guide-closing">El funcionamiento se basa en una lógica visual y conceptual: cuanto más fiel sea el retrato y más estrictamente se respeten las letras del nombre y apellidos, más sólida será la pieza final.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-close-guide-footer">Cerrar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Exportación Universal (GIF / ZIP) -->
     <div class="modal-overlay" id="export-modal">
@@ -678,7 +765,7 @@
             constructor(width, height, fps = 10) {
                 this.width = width;
                 this.height = height;
-                this.delay = Math.round(100 / fps); // Unidades de 10ms para el GIF
+                this.delay = Math.round(100 / fps);
                 this.frames = [];
             }
 
@@ -687,7 +774,6 @@
                 this.frames.push(imgData);
             }
 
-            // Cuantización de color a 256 colores
             quantizeFrame(imgData) {
                 const data = imgData.data;
                 const pixels = new Uint8Array(this.width * this.height);
@@ -696,8 +782,6 @@
 
                 for (let i = 0; i < data.length; i += 4) {
                     const r = data[i], g = data[i+1], b = data[i+2];
-                    
-                    // Modificación: Redondeo en lugar de truncamiento para preservar blancos e intensidad
                     const qr = Math.min(255, Math.round(r / 8) * 8);
                     const qg = Math.min(255, Math.round(g / 8) * 8);
                     const qb = Math.min(255, Math.round(b / 8) * 8);
@@ -728,7 +812,6 @@
                 return { pixels, palette };
             }
 
-            // LZW Compression
             lzwEncode(pixels, minCodeSize) {
                 const out = [];
                 let curBit = 0, curByte = 0;
@@ -778,7 +861,6 @@
                 writeBits(eofCode, codeSize);
                 if (curBit > 0) out.push(curByte & 0xFF);
 
-                // Dividir en paquetes de 255 bytes
                 const packets = [];
                 let idx = 0;
                 while (idx < out.length) {
@@ -793,13 +875,11 @@
 
             buildGIFBlob(onProgress) {
                 const bytes = [];
-                // GIF Header
-                bytes.push(0x47, 0x49, 0x46, 0x38, 0x39, 0x61); // GIF89a
+                bytes.push(0x47, 0x49, 0x46, 0x38, 0x39, 0x61);
                 bytes.push(this.width & 0xFF, (this.width >> 8) & 0xFF);
                 bytes.push(this.height & 0xFF, (this.height >> 8) & 0xFF);
                 bytes.push(0x70, 0, 0);
 
-                // Loop Bucle Infinito
                 bytes.push(0x21, 0xFF, 0x0B);
                 [0x4E,0x45,0x54,0x53,0x43,0x41,0x50,0x45,0x32,0x2E,0x30].forEach(b => bytes.push(b));
                 bytes.push(0x03, 0x01, 0x00, 0x00, 0x00);
@@ -808,28 +888,24 @@
                     if (onProgress) onProgress((f + 1) / this.frames.length);
                     const { pixels, palette } = this.quantizeFrame(this.frames[f]);
 
-                    // Graphic Control Extension
                     bytes.push(0x21, 0xF9, 0x04, 0x04);
                     bytes.push(this.delay & 0xFF, (this.delay >> 8) & 0xFF);
                     bytes.push(0, 0);
 
-                    // Image Descriptor
                     bytes.push(0x2C, 0, 0, 0, 0);
                     bytes.push(this.width & 0xFF, (this.width >> 8) & 0xFF);
                     bytes.push(this.height & 0xFF, (this.height >> 8) & 0xFF);
-                    bytes.push(0x87); // Local color table flag + size 256
+                    bytes.push(0x87);
 
-                    // Palette (768 bytes)
                     for (let p = 0; p < 256; p++) {
                         bytes.push(palette[p][0], palette[p][1], palette[p][2]);
                     }
 
-                    // LZW Data
                     bytes.push(8);
                     const packets = this.lzwEncode(pixels, 8);
                     packets.forEach(b => bytes.push(b));
                 }
-                bytes.push(0x3B); // GIF Trailer
+                bytes.push(0x3B);
                 return new Blob([new Uint8Array(bytes)], { type: 'image/gif' });
             }
         }
@@ -855,16 +931,16 @@
                 historyIndex: -1
             };
 
-            // Elementos DOM
             const canvas = document.getElementById('viewport-canvas');
             const ctx = canvas.getContext('2d', { willReadFrequently: true });
             const charGrid = document.getElementById('char-grid');
             const charSearch = document.getElementById('char-search');
+            const nameFilterInput = document.getElementById('name-filter-input');
+            const btnClearNameFilter = document.getElementById('btn-clear-name-filter');
             const framesContainer = document.getElementById('frames-container');
             const frameCounter = document.getElementById('frame-counter');
             const bgColorPicker = document.getElementById('bg-color-picker');
             
-            // Inspector DOM
             const noSelectionMsg = document.getElementById('no-selection-msg');
             const inspectorControls = document.getElementById('inspector-controls');
             const propX = document.getElementById('prop-x');
@@ -883,25 +959,67 @@
                 'à','è','é','í','ï','ò','ó','ú','ü','ç','ñ','¿','¡','«','»','“','”'
             ];
 
-            // Setup color de fondo
+            // Normalización para eliminar acentos (Feature 2)
+            function removeDiacritics(str) {
+                return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            }
+
             bgColorPicker.addEventListener('input', (e) => {
                 state.bgColor = e.target.value;
                 redraw();
-                renderFrames(); // Refrescar los thumbs con el nuevo color
+                renderFrames();
             });
 
-            function renderCharGrid(filter = '') {
+            // Renderizado inteligente del grid de caracteres combinando Buscador + Filtro por Nombre
+            function renderCharGrid() {
+                const searchVal = charSearch.value.toLowerCase();
+                const nameVal = nameFilterInput.value.trim();
+
+                const normalizedName = removeDiacritics(nameVal);
+                const allowedLetters = new Set();
+                for (let i = 0; i < normalizedName.length; i++) {
+                    const c = normalizedName[i];
+                    if (/[a-zñç]/.test(c)) {
+                        allowedLetters.add(c);
+                    }
+                }
+
                 charGrid.innerHTML = '';
-                characters.filter(c => c.toLowerCase().includes(filter.toLowerCase())).forEach(char => {
+                characters.forEach(char => {
+                    const matchesSearch = char.toLowerCase().includes(searchVal);
+                    if (!matchesSearch && searchVal !== '') return;
+
                     const div = document.createElement('div');
                     div.className = 'char-item';
                     div.textContent = char;
-                    div.addEventListener('click', () => addCharacter(char));
+
+                    const normChar = removeDiacritics(char);
+                    const isLetter = /^[a-zñç]$/.test(normChar);
+
+                    let isDisabled = false;
+                    if (nameVal !== '' && isLetter) {
+                        if (!allowedLetters.has(normChar)) {
+                            isDisabled = true;
+                        }
+                    }
+
+                    if (isDisabled) {
+                        div.classList.add('disabled');
+                    } else {
+                        div.addEventListener('click', () => addCharacter(char));
+                    }
+
                     charGrid.appendChild(div);
                 });
             }
+
             renderCharGrid();
-            charSearch.addEventListener('input', (e) => renderCharGrid(e.target.value));
+            charSearch.addEventListener('input', () => renderCharGrid());
+            nameFilterInput.addEventListener('input', () => renderCharGrid());
+            btnClearNameFilter.addEventListener('click', () => {
+                nameFilterInput.value = '';
+                renderCharGrid();
+            });
 
             function saveHistoryState() {
                 const snapshot = JSON.stringify(state.frames);
@@ -921,7 +1039,7 @@
                     y: state.height / 2,
                     size: 80,
                     rotation: 0,
-                    color: '#FFFFFF', // Modificado a blanco puro #FFFFFF por defecto
+                    color: '#FFFFFF',
                     opacity: 1.0
                 };
                 currentFrame.objects.push(newObj);
@@ -936,18 +1054,14 @@
             // ==========================================
             // 3. MOTOR DE RENDERIZADO Y CONTROL CURSOR
             // ==========================================
-            // transparentBg = booleano usado durante la exportación de secuencias PNG
             function redraw(renderForExport = false, overrideRefShow = false, transparentBg = false) {
                 ctx.clearRect(0, 0, state.width, state.height);
 
-                // Dibujar color de fondo si no es transparente y no es modo cebolla base
                 if (!transparentBg) {
                     ctx.fillStyle = state.bgColor;
                     ctx.fillRect(0, 0, state.width, state.height);
                 }
 
-                // Capa Plantilla Guía Base
-                // Modificado: Si es exportación, evaluamos solo el checkbox overrideRefShow.
                 const showRef = renderForExport ? overrideRefShow : state.referenceImage.visible;
                 if (showRef && state.referenceImage.img) {
                     ctx.save();
@@ -956,17 +1070,14 @@
                     ctx.restore();
                 }
 
-                // Onion Skin (Frame Anterior)
                 if (!renderForExport && state.onionSkin && state.currentFrameIndex > 0) {
                     const prevFrame = state.frames[state.currentFrameIndex - 1];
                     drawObjects(prevFrame.objects, 0.25, true);
                 }
 
-                // Objetos del Fotograma Actual
                 const currentFrame = state.frames[state.currentFrameIndex];
                 drawObjects(currentFrame.objects, 1.0, false);
 
-                // Tiradores e Interfaz sobre Canvas (solo si no es exportación)
                 if (!renderForExport && state.selectedObjectId) {
                     const obj = currentFrame.objects.find(o => o.id === state.selectedObjectId);
                     if (obj) drawBoundingBoxAndHandles(obj);
@@ -1002,12 +1113,10 @@
                 ctx.translate(obj.x, obj.y);
                 ctx.rotate((obj.rotation * Math.PI) / 180);
 
-                // Caja de selección
                 ctx.strokeStyle = '#3b82f6';
                 ctx.lineWidth = 1.5;
                 ctx.strokeRect(-w/2 - 8, -h/2 - 8, w + 16, h + 16);
 
-                // Tirador de Rotación
                 ctx.beginPath();
                 ctx.moveTo(0, -h/2 - 8);
                 ctx.lineTo(0, -h/2 - 28);
@@ -1018,13 +1127,11 @@
                 ctx.arc(0, -h/2 - 28, 5, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Tirador de Escala
                 ctx.fillRect(w/2 + 4, h/2 + 4, 8, 8);
 
                 ctx.restore();
             }
 
-            // Manipulación Gestual por Ratón / Cursor
             let dragMode = null; 
             let dragOffset = { x: 0, y: 0 };
 
@@ -1229,7 +1336,22 @@
             });
 
             // ==========================================
-            // 6. TIMELINE Y ANIMACIÓN FRAME A FRAME
+            // 6. MODAL DE GUÍA DEL USUARIO (Feature 1)
+            // ==========================================
+            const guideModal = document.getElementById('guide-modal');
+            const btnOpenGuide = document.getElementById('btn-open-guide');
+            const btnCloseGuideModal = document.getElementById('btn-close-guide-modal');
+            const btnCloseGuideFooter = document.getElementById('btn-close-guide-footer');
+
+            btnOpenGuide.addEventListener('click', () => { guideModal.style.display = 'flex'; });
+            btnCloseGuideModal.addEventListener('click', () => { guideModal.style.display = 'none'; });
+            btnCloseGuideFooter.addEventListener('click', () => { guideModal.style.display = 'none'; });
+            guideModal.addEventListener('click', (e) => {
+                if (e.target === guideModal) guideModal.style.display = 'none';
+            });
+
+            // ==========================================
+            // 7. TIMELINE Y ANIMACIÓN FRAME A FRAME
             // ==========================================
             function renderFrames() {
                 framesContainer.innerHTML = '';
@@ -1249,7 +1371,6 @@
                         if (tCv) {
                             const tCtx = tCv.getContext('2d');
                             tCtx.clearRect(0, 0, 48, 36);
-                            // Dibujar el fondo seleccionado en las miniaturas también
                             tCtx.fillStyle = state.bgColor;
                             tCtx.fillRect(0, 0, 48, 36);
                             
@@ -1313,7 +1434,7 @@
             });
 
             // ==========================================
-            // 7. MÓDULOS DE EXPORTACIÓN (GIF y ZIP)
+            // 8. MÓDULOS DE EXPORTACIÓN (GIF y ZIP)
             // ==========================================
             const exportModal = document.getElementById('export-modal');
             const progressBar = document.getElementById('export-progress-bar');
@@ -1331,14 +1452,13 @@
             document.getElementById('btn-close-modal').addEventListener('click', () => exportModal.style.display = 'none');
             document.getElementById('btn-cancel-export').addEventListener('click', () => exportModal.style.display = 'none');
 
-            // Lógica para mostrar las opciones del formato transparente según el Radio Button seleccionado
             document.querySelectorAll('input[name="export-type"]').forEach(radio => {
                 radio.addEventListener('change', (e) => {
                     if (e.target.value === 'png') {
                         pngOptionsBox.style.display = 'block';
                     } else {
                         pngOptionsBox.style.display = 'none';
-                        document.getElementById('chk-transparent-bg').checked = false; // Reset
+                        document.getElementById('chk-transparent-bg').checked = false;
                     }
                 });
             });
@@ -1352,14 +1472,13 @@
                 progressBar.style.display = 'block';
 
                 if (exportType === 'gif') {
-                    // Exportar GIF Animado Vanilla (Preexistente)
                     statusText.textContent = 'Procesando fotogramas...';
                     setTimeout(() => {
                         const exporter = new VanillaGIFExporter(state.width, state.height, fps);
                         const savedIndex = state.currentFrameIndex;
                         for (let f = 0; f < state.frames.length; f++) {
                             state.currentFrameIndex = f;
-                            redraw(true, includeRef, false); // GIF no soporta alfa fácilmente en nuestro encode base, fondo sólido dictado por el Canvas
+                            redraw(true, includeRef, false);
                             exporter.addFrame(ctx);
                         }
                         state.currentFrameIndex = savedIndex;
@@ -1382,7 +1501,6 @@
                     }, 50);
 
                 } else {
-                    // Exportación de frames con JSZip
                     if (typeof JSZip === 'undefined') {
                         alert("Error: No se pudo cargar la librería JSZip (Revisa la conexión a Internet).");
                         return;
@@ -1396,29 +1514,24 @@
                     
                     const savedIndex = state.currentFrameIndex;
                     
-                    // Loop asíncrono sobre los fotogramas para extraer el Blob
                     for (let f = 0; f < state.frames.length; f++) {
                         state.currentFrameIndex = f;
                         redraw(true, includeRef, transparentBg); 
                         
-                        // Modificación: Forzar compresión de calidad máxima 1.0 para retener el blanco puro en JPG/PNG
                         const blob = await new Promise(resolve => canvas.toBlob(resolve, mimeType, 1.0));
-                        
-                        // Formato de padding (001, 002...)
                         const frameNum = String(f + 1).padStart(3, '0');
                         zip.file(`frame_${frameNum}.${ext}`, blob);
 
-                        const progress = ((f + 1) / state.frames.length) * 50; // Representa el primer 50% de progreso
+                        const progress = ((f + 1) / state.frames.length) * 50;
                         progressFill.style.width = `${progress}%`;
                     }
                     
-                    // Restaurar estado visual normal
                     state.currentFrameIndex = savedIndex;
                     redraw();
 
                     statusText.textContent = 'Comprimiendo ZIP...';
                     const zipBlob = await zip.generateAsync({ type: 'blob' }, (metadata) => {
-                        const totalProgress = 50 + (metadata.percent / 2); // Representa el último 50% del proceso
+                        const totalProgress = 50 + (metadata.percent / 2);
                         progressFill.style.width = `${totalProgress}%`;
                         statusText.textContent = `Comprimiendo ZIP: ${Math.round(metadata.percent)}%`;
                     });
@@ -1435,7 +1548,6 @@
                 }
             });
 
-            // Atajos de Teclado
             window.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
                 if (e.key === ' ' || e.code === 'Space') {
@@ -1452,7 +1564,6 @@
                 }
             });
 
-            // Pestañas
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1462,7 +1573,6 @@
                 });
             });
 
-            // Inicialización general
             renderFrames();
             redraw();
         });
