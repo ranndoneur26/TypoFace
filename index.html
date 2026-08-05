@@ -824,6 +824,43 @@
                         <input type="checkbox" id="chk-include-ref"> Incluir imagen plantilla base en la exportación final
                     </label>
                 </div>
+
+                <!-- NEW ADDITIVE FEATURE: Frame Transition Effects for GIF Export -->
+                <div class="control-section" style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 12px;">
+                    <label class="control-label" style="font-weight: 600; color: var(--text-main);">Efectos de Transición (Solo GIF)</label>
+                    
+                    <div class="control-section mt-2">
+                        <label class="text-xs text-muted flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="chk-enable-fade"> 
+                            Fade / Crossfade entre fotogramas
+                        </label>
+                        <div id="fade-options" style="display: none; margin-top: 6px; padding-left: 18px;" class="text-xs text-muted flex items-center gap-2">
+                            <span>Pasos intermedios:</span>
+                            <select id="fade-steps-select" class="select-custom" style="width: 70px;">
+                                <option value="1">1</option>
+                                <option value="2" selected>2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-section mt-2">
+                        <label class="text-xs text-muted flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="chk-enable-blur"> 
+                            Motion Blur / Desenfoque de movimiento
+                        </label>
+                        <div id="blur-options" style="display: none; margin-top: 6px; padding-left: 18px;" class="flex items-center gap-2 text-xs text-muted">
+                            <span>Intensidad:</span>
+                            <select id="blur-intensity-select" class="select-custom" style="width: 90px;">
+                                <option value="low">Baja</option>
+                                <option value="medium" selected>Media</option>
+                                <option value="high">Alta</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="progress-bar" id="export-progress-bar">
                     <div class="progress-fill" id="export-progress-fill"></div>
                 </div>
@@ -1048,6 +1085,20 @@
             const chkTransparentUi = document.getElementById('chk-transparent-ui');
             const chkTransparentBg = document.getElementById('chk-transparent-bg');
             const pngOptionsBox = document.getElementById('export-png-options');
+
+            // Wire up transition effect controls in export modal
+            const chkEnableFade = document.getElementById('chk-enable-fade');
+            const fadeOptions = document.getElementById('fade-options');
+            const chkEnableBlur = document.getElementById('chk-enable-blur');
+            const blurOptions = document.getElementById('blur-options');
+
+            chkEnableFade.addEventListener('change', (e) => {
+                fadeOptions.style.display = e.target.checked ? 'flex' : 'none';
+            });
+
+            chkEnableBlur.addEventListener('change', (e) => {
+                blurOptions.style.display = e.target.checked ? 'flex' : 'none';
+            });
 
             function updateTransparentState(isTransparent) {
                 state.transparentBackgroundUI = isTransparent;
@@ -1329,6 +1380,95 @@
                     ctx.fillText(obj.char, 0, 0);
                     ctx.restore();
                 });
+            }
+
+            // Helper for rendering objects onto any context (used for transition and blur effects)
+            function drawObjectsToContext(ctxTarget, objects) {
+                const scaleFactor = getLetterScaleFactor();
+                const centerX = state.width / 2;
+                const centerY = state.height / 2;
+
+                objects.forEach(obj => {
+                    ctxTarget.save();
+                    ctxTarget.globalAlpha *= obj.opacity;
+
+                    const renderX = centerX + (obj.x - centerX) * scaleFactor;
+                    const renderY = centerY + (obj.y - centerY) * scaleFactor;
+                    const renderSize = obj.size * scaleFactor;
+
+                    ctxTarget.translate(renderX, renderY);
+                    ctxTarget.rotate((obj.rotation * Math.PI) / 180);
+                    ctxTarget.font = `${obj.style} ${renderSize}px "${obj.font}", sans-serif`;
+                    ctxTarget.fillStyle = obj.color;
+                    ctxTarget.textAlign = 'center';
+                    ctxTarget.textBaseline = 'middle';
+                    ctxTarget.fillText(obj.char, 0, 0);
+                    ctxTarget.restore();
+                });
+            }
+
+            // Helper to render a frame or a transition blend (with fade and motion blur) onto target canvas
+            function renderFrameToTarget(targetCtx, targetCanvas, frameIdxA, frameIdxB, t, fadeEnabled, blurEnabled, maxBlur, includeRef, transparentBg) {
+                const w = state.width;
+                const h = state.height;
+                targetCtx.clearRect(0, 0, w, h);
+
+                if (!transparentBg) {
+                    targetCtx.fillStyle = state.bgColor;
+                    targetCtx.fillRect(0, 0, w, h);
+                }
+
+                if (includeRef && state.referenceImage.img) {
+                    targetCtx.save();
+                    targetCtx.beginPath();
+                    targetCtx.rect(0, 0, w, h);
+                    targetCtx.clip();
+                    targetCtx.globalAlpha = state.referenceImage.opacity;
+                    const transform = getRefImageTransform();
+                    if (transform) {
+                        targetCtx.drawImage(state.referenceImage.img, transform.x, transform.y, transform.w, transform.h);
+                    }
+                    targetCtx.restore();
+                }
+
+                const objCanvas = document.createElement('canvas');
+                objCanvas.width = w;
+                objCanvas.height = h;
+                const oCtx = objCanvas.getContext('2d', { willReadFrequently: true });
+                oCtx.imageSmoothingEnabled = true;
+                oCtx.imageSmoothingQuality = 'high';
+
+                const alphaA = fadeEnabled ? (1 - t) : (t === 0 ? 1.0 : (1 - t));
+                if (alphaA > 0.001) {
+                    oCtx.save();
+                    oCtx.globalAlpha = alphaA;
+                    drawObjectsToContext(oCtx, state.frames[frameIdxA].objects);
+                    oCtx.restore();
+                }
+
+                if (t > 0 && frameIdxB !== frameIdxA) {
+                    const alphaB = fadeEnabled ? t : t;
+                    if (alphaB > 0.001) {
+                        oCtx.save();
+                        oCtx.globalAlpha = alphaB;
+                        drawObjectsToContext(oCtx, state.frames[frameIdxB].objects);
+                        oCtx.restore();
+                    }
+                }
+
+                if (blurEnabled && t > 0 && t < 1 && maxBlur > 0) {
+                    const currentBlur = maxBlur * Math.sin(t * Math.PI);
+                    if (currentBlur > 0.5) {
+                        targetCtx.save();
+                        targetCtx.filter = `blur(${currentBlur.toFixed(1)}px)`;
+                        targetCtx.drawImage(objCanvas, 0, 0);
+                        targetCtx.restore();
+                    } else {
+                        targetCtx.drawImage(objCanvas, 0, 0);
+                    }
+                } else {
+                    targetCtx.drawImage(objCanvas, 0, 0);
+                }
             }
 
             function getObjectBounds(obj) {
@@ -1779,26 +1919,75 @@
                 const offsetY = (destH - scaledH) / 2;
 
                 if (exportType === 'gif') {
-                    statusText.textContent = `Procesando fotogramas (${destW}x${destH})...`;
+                    statusText.textContent = `Procesando fotogramas con transiciones (${destW}x${destH})...`;
                     setTimeout(() => {
                         const exporter = new VanillaGIFExporter(destW, destH, fps);
                         const savedIndex = state.currentFrameIndex;
 
-                        for (let f = 0; f < state.frames.length; f++) {
-                            state.currentFrameIndex = f;
-                            redraw(true, includeRef, false);
+                        const fadeEnabled = chkEnableFade.checked;
+                        const fadeSteps = parseInt(document.getElementById('fade-steps-select').value, 10) || 2;
+                        const blurEnabled = chkEnableBlur.checked;
+                        const blurIntensity = document.getElementById('blur-intensity-select').value;
 
+                        let maxBlur = 0;
+                        if (blurEnabled) {
+                            const baseDim = Math.min(destW, destH);
+                            let factor = 0.01;
+                            if (blurIntensity === 'medium') factor = 0.025;
+                            if (blurIntensity === 'high') factor = 0.05;
+                            maxBlur = Math.max(2, baseDim * factor);
+                        }
+
+                        const useTransitions = (fadeEnabled || blurEnabled) && state.frames.length > 1;
+                        const K = useTransitions ? fadeSteps : 0;
+                        const N = state.frames.length;
+
+                        let totalFrames = 0;
+                        for (let f = 0; f < N; f++) {
+                            totalFrames += 1;
+                            if (useTransitions) totalFrames += K;
+                        }
+
+                        let processed = 0;
+                        const offCanvas = document.createElement('canvas');
+                        offCanvas.width = state.width;
+                        offCanvas.height = state.height;
+                        const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+                        offCtx.imageSmoothingEnabled = true;
+                        offCtx.imageSmoothingQuality = 'high';
+
+                        for (let f = 0; f < N; f++) {
+                            // Render real frame f
+                            renderFrameToTarget(offCtx, offCanvas, f, f, 0, fadeEnabled, blurEnabled, maxBlur, includeRef, false);
                             destCtx.fillStyle = state.bgColor;
                             destCtx.fillRect(0, 0, destW, destH);
-                            destCtx.drawImage(canvas, offsetX, offsetY, scaledW, scaledH);
-
+                            destCtx.drawImage(offCanvas, offsetX, offsetY, scaledW, scaledH);
                             exporter.addFrame(destCtx);
+                            processed++;
+                            progressFill.style.width = `${Math.round((processed / totalFrames) * 50)}%`;
+
+                            // Render intermediate transition frames if enabled
+                            if (useTransitions) {
+                                const nextF = (f + 1) % N;
+                                for (let s = 1; s <= K; s++) {
+                                    const t = s / (K + 1);
+                                    renderFrameToTarget(offCtx, offCanvas, f, nextF, t, fadeEnabled, blurEnabled, maxBlur, includeRef, false);
+                                    destCtx.fillStyle = state.bgColor;
+                                    destCtx.fillRect(0, 0, destW, destH);
+                                    destCtx.drawImage(offCanvas, offsetX, offsetY, scaledW, scaledH);
+                                    exporter.addFrame(destCtx);
+                                    processed++;
+                                    progressFill.style.width = `${Math.round((processed / totalFrames) * 50)}%`;
+                                }
+                            }
                         }
+
                         state.currentFrameIndex = savedIndex;
                         redraw();
 
                         const gifBlob = exporter.buildGIFBlob((progress) => {
-                            progressFill.style.width = `${Math.round(progress * 100)}%`;
+                            const totalProgress = 50 + Math.round(progress * 50);
+                            progressFill.style.width = `${totalProgress}%`;
                             statusText.textContent = `Comprimiendo GIF (${destW}x${destH}): ${Math.round(progress * 100)}%`;
                         });
 
