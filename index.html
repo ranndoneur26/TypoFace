@@ -4,16 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="TYPOFACE - Aplicación profesional de animación tipográfica frame a frame y exportador GIF">
-    <!-- CSP actualizado para permitir Google Fonts y JSZip vía CDN -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: blob: https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com;">
     <title>TYPOFACE — make faces with Typography</title>
     
-    <!-- Preconexión y carga de Google Fonts Serif profesionales -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     
-    <!-- Script preventivo anti-flash de tema -->
     <script>
         (function() {
             const savedTheme = localStorage.getItem('typoface-theme') || 'dark';
@@ -21,7 +18,6 @@
         })();
     </script>
 
-    <!-- Librería JSZip inyectada vía CDN para la exportación de secuencias de frames -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
@@ -41,7 +37,6 @@
             --success: #10b981;
         }
 
-        /* Tema Claro Profesional */
         html.light {
             --bg-base: #f1f5f9;
             --bg-surface: #ffffff;
@@ -74,13 +69,11 @@
             flex-direction: column;
         }
 
-        /* Scrollbars */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-surface); }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-        /* Topbar Header */
         header {
             height: 50px;
             background-color: var(--bg-surface);
@@ -161,7 +154,6 @@
         .btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
         .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 
-        /* Main Grid Layout */
         .main-container {
             flex: 1;
             display: grid;
@@ -170,7 +162,6 @@
             overflow: hidden;
         }
 
-        /* Paneles */
         .panel {
             background-color: var(--bg-panel);
             border-right: 1px solid var(--border-color);
@@ -205,7 +196,6 @@
             padding: 12px;
         }
 
-        /* Form Controls */
         .control-section { margin-bottom: 16px; }
         .control-label {
             font-size: 11px;
@@ -264,7 +254,6 @@
             cursor: not-allowed;
         }
 
-        /* Area Central / Viewport Canvas */
         .canvas-area {
             grid-column: 2;
             grid-row: 1;
@@ -290,6 +279,7 @@
             gap: 12px;
             align-items: center;
             z-index: 10;
+            flex-wrap: wrap;
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         html.dark .canvas-toolbar { background: rgba(26, 27, 32, 0.9); }
@@ -319,7 +309,6 @@
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
         }
 
-        /* Timeline / Fotogramas */
         .timeline-panel {
             grid-column: 1 / 3;
             grid-row: 2;
@@ -369,7 +358,6 @@
         .frame-thumb span { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
         .frame-thumb canvas { width: 48px; height: 36px; border-radius: 2px; } 
 
-        /* Inspector & Layers */
         .tabs { display: flex; border-bottom: 1px solid var(--border-color); background: var(--bg-surface); }
         .tab {
             flex: 1;
@@ -403,7 +391,6 @@
         }
         .layer-item.selected { border-color: var(--accent); background: rgba(59, 130, 246, 0.08); }
 
-        /* Estilos específicos para la Guía del Usuario */
         .guide-content h3 {
             font-size: 13px;
             font-weight: 600;
@@ -437,7 +424,6 @@
             margin-top: 14px;
         }
 
-        /* Modal Genérico / Guía / Exportación */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -491,7 +477,6 @@
             transition: width 0.1s;
         }
         
-        /* Footer Elegante */
         footer {
             background-color: var(--bg-panel);
             border-top: 1px solid var(--border-color);
@@ -510,7 +495,6 @@
             color: var(--accent-hover);
         }
 
-        /* Utility classes */
         .flex { display: flex; }
         .items-center { align-items: center; }
         .justify-between { justify-content: space-between; }
@@ -523,7 +507,6 @@
 </head>
 <body>
 
-    <!-- Header Principal -->
     <header>
         <div class="brand">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
@@ -539,9 +522,7 @@
             <button class="btn" id="btn-load-json">Abrir JSON</button>
             <input type="file" id="file-json" accept=".json" style="display: none;">
             <span style="width: 1px; height: 20px; background: var(--border-color);"></span>
-            <!-- Botón de Guía de Usuario -->
             <button class="btn" id="btn-open-guide" title="Guía del usuario" style="padding: 6px 10px; font-weight: 700;">?</button>
-            <!-- Botón Toggle Tema Oscuro/Claro -->
             <button class="btn" id="btn-theme-toggle" title="Cambiar tema oscuro / claro" style="padding: 6px 10px;">
                 <span id="theme-icon">🌙</span>
             </button>
@@ -555,10 +536,8 @@
         </div>
     </header>
 
-    <!-- Layout Principal -->
     <div class="main-container">
 
-        <!-- Panel Izquierdo: Tipografía y Caracteres -->
         <div class="panel">
             <div class="panel-header">Biblioteca Tipográfica</div>
             <div class="panel-body">
@@ -606,7 +585,6 @@
             </div>
         </div>
 
-        <!-- Área Central: Canvas Interactivo -->
         <div class="canvas-area">
             <div class="canvas-toolbar">
                 <button class="btn" id="btn-upload-ref">Cargar Plantilla Guía</button>
@@ -614,15 +592,20 @@
                 
                 <span class="text-xs text-muted flex items-center gap-2">
                     Opacidad:
-                    <input type="range" id="ref-opacity" min="0" max="100" value="40" style="width: 60px;">
+                    <input type="range" id="ref-opacity" min="0" max="100" value="40" style="width: 70px;">
                     <span id="opacity-val">40%</span>
                 </span>
 
                 <span class="text-xs text-muted flex items-center gap-2">
                     Zoom:
-                    <input type="range" id="ref-zoom" min="100" max="300" value="100" style="width: 60px;">
+                    <input type="range" id="ref-zoom" min="100" max="300" value="100" style="width: 70px;">
                     <span id="zoom-val">100%</span>
                 </span>
+
+                <!-- NUEVO CONTROL: Checkbox Encajar con tamaño -->
+                <label class="text-xs text-muted flex items-center gap-2 cursor-pointer" title="Escala las letras proporcionalmente con el zoom de la plantilla guía">
+                    <input type="checkbox" id="chk-lock-scale"> Encajar con tamaño
+                </label>
 
                 <button class="btn" id="btn-toggle-ref">Ocultar Guía</button>
                 
@@ -636,14 +619,12 @@
             <canvas id="viewport-canvas" width="800" height="600"></canvas>
         </div>
 
-        <!-- Panel Derecho: Inspector de Coordenadas y Capas -->
         <div class="panel panel-right">
             <div class="tabs">
                 <div class="tab active" data-tab="tab-inspector">Inspector</div>
                 <div class="tab" data-tab="tab-layers">Capas</div>
             </div>
 
-            <!-- Tab Inspector -->
             <div id="tab-inspector" class="tab-content active">
                 <div id="no-selection-msg" class="text-xs text-muted" style="text-align: center; padding: 40px 0;">
                     Selecciona o arrastra una letra en el lienzo para ajustar sus propiedades de posición, escala y ángulo.
@@ -688,13 +669,11 @@
                 </div>
             </div>
 
-            <!-- Tab Capas -->
             <div id="tab-layers" class="tab-content">
                 <div id="layers-list"></div>
             </div>
         </div>
 
-        <!-- Timeline Inferior -->
         <div class="timeline-panel">
             <div class="timeline-controls">
                 <div class="toolbar-group">
@@ -702,7 +681,6 @@
                     <button class="btn" id="btn-dup-frame">Duplicar Frame</button>
                     <button class="btn" id="btn-del-frame" style="color: var(--danger);">Eliminar Frame</button>
                 </div>
-                <!-- Filtro de letras por nombre y apellido/s -->
                 <div class="toolbar-group" style="gap: 4px;">
                     <input type="text" id="name-filter-input" class="input-custom text-xs" placeholder="Introduce nombre y apellido/s" style="width: 210px;">
                     <button class="btn" id="btn-clear-name-filter" title="Limpiar filtro" style="padding: 6px 8px;">✕</button>
@@ -724,12 +702,10 @@
         </div>
     </div>
     
-    <!-- Footer -->
     <footer>
         Idea Xinanimodelacra, desarrollo by <a href="https://www.marcxicola.com" target="_blank" rel="noopener noreferrer">www.marcxicola.com</a>
     </footer>
 
-    <!-- Modal de Guía del Usuario -->
     <div class="modal-overlay" id="guide-modal">
         <div class="modal" style="width: 560px; max-width: 90vw;">
             <div class="modal-header">
@@ -740,26 +716,46 @@
                 <p><strong>TypoFACE</strong> es una aplicación de retrato tipográfico que transforma una cara en una composición hecha exclusivamente con letras. El usuario sube una imagen de referencia y reconstruye manualmente el rostro sobre el lienzo utilizando solo las letras contenidas en el nombre y los apellidos de la persona retratada. No está permitido usar otras letras distintas.</p>
                 <p>El proceso es manual y creativo: la imagen funciona como <strong>plantilla guía</strong>, y el usuario selecciona, coloca, rota, escala y colorea letras sobre el lienzo hasta construir una cara reconocible. La herramienta también permite trabajar por capas y, si se desea, generar una animación fotograma a fotograma del resultado.</p>
                 
-                <h3>Section 1 — Regla principal</h3>
+                <h3>Sección 1 — Regla principal</h3>
                 <p>La regla esencial del proyecto es la <strong>restricción tipográfica por identidad</strong>: solo pueden usarse letras incluidas en el nombre y apellido o los dos apellidos del sujeto retratado. Esto implica que la composición no se basa en cualquier alfabeto disponible, sino en un conjunto limitado de caracteres que obliga a resolver el retrato con las letras autorizadas.</p>
                 <p>Por ejemplo, si el nombre fuese "Ana Pérez", la construcción del rostro tendría que hacerse únicamente con las letras presentes en "Ana Pérez", repitiéndolas cuantas haga falta, pero sin incorporar otras nuevas. La aplicación ofrece un campo de <strong>nombre y apellidos</strong> que activa automáticamente solo las letras autorizadas, además de un <strong>buscador de caracteres</strong> para facilitar ese trabajo.</p>
                 
-                <h3>Section 2 — Funciones principales y Biblioteca Tipográfica</h3>
+                <h3>Sección 2 — Funciones principales y Biblioteca Tipográfica</h3>
                 <p>La aplicación integra una potente <strong>biblioteca de fuentes serif profesionales</strong> cargadas vía Google Fonts (Playfair Display, EB Garamond, Cormorant Garamond, Libre Baskerville, Cinzel, Merriweather) junto con fuentes clásicas del sistema (Times New Roman, Georgia, Arial, Courier New) y la posibilidad de <strong>cargar fuentes locales en formatos OTF, TTF o WOFF</strong> mediante la API web estándar.</p>
                 <ul>
                     <li>Elección precisa de <strong>estilo y peso real</strong>: Regular, Italic, Bold y Bold Italic con archivos tipográficos genuinos.</li>
-                    <li><strong>Plantilla guía</strong>: puedes cargar una imagen de referencia, ajustar su opacidad, aplicar zoom proporcional y ocultarla cuando ya no la necesites.</li>
+                    <li><strong>Plantilla guía y controles avanzados en lienzo</strong>:
+                        <ul>
+                            <li><strong>Adaptación automática sin deformación</strong>: la imagen de referencia se ajusta al lienzo manteniendo siempre su proporción original y centrada, sea cual sea su formato (vertical, panorámica o cuadrada).</li>
+                            <li><strong>Zoom de plantilla (100%–300%)</strong>: slider que permite ampliar la imagen de base para trabajar detalles; la imagen permanece centrada y se recorta limpiamente en los bordes del lienzo.</li>
+                            <li><strong>Encajar con tamaño</strong>: checkbox opcional que, al activarlo, hace que las letras escalen proporcionalmente junto con el zoom de la plantilla, manteniendo el encaje entre letras y dibujo de referencia. Si está desactivado (por defecto), las letras no varían al cambiar el zoom. Al cargar una nueva plantilla, el zoom vuelve al 100% y esta opción se desactiva.</li>
+                            <li>Ajuste de opacidad y botón para ocultar o mostrar la guía.</li>
+                        </ul>
+                    </li>
                     <li><strong>Fondo configurable</strong> del lienzo, <strong>inspector de propiedades</strong> y <strong>panel de capas</strong> para organizar la composición.</li>
                 </ul>
                 
-                <h3>Section 3 — Edición en lienzo</h3>
+                <h3>Sección 3 — Interfaz y personalización</h3>
+                <p>La barra superior y los controles de acceso rápido optimizan el flujo de trabajo en la interfaz:</p>
+                <ul>
+                    <li><strong>Tema claro / oscuro</strong>: botón con icono de sol/luna en el header que alterna el aspecto de toda la interfaz. La preferencia se guarda automáticamente y se recuerda en la próxima visita. El lienzo y las exportaciones no se ven afectados por el tema.</li>
+                    <li><strong>Guardar / Abrir proyecto (JSON)</strong>: botones del header para guardar el proyecto completo en un archivo <code>.json</code> y recuperarlo más tarde.</li>
+                    <li><strong>Deshacer / Rehacer y atajos</strong>: botones de control y atajos de teclado (<code>Ctrl+Z</code> / <code>Ctrl+Shift+Z</code>), además de la tecla <code>Espacio</code> para reproducir o pausar la animación y <code>Supr</code> para borrar la letra seleccionada.</li>
+                </ul>
+
+                <h3>Sección 4 — Edición en lienzo</h3>
                 <p>Cuando seleccionas una letra en el lienzo, el inspector permite modificar sus propiedades: posición X, posición Y, tamaño/escala, ángulo de rotación, color y opacidad. También existen acciones directas para duplicar o borrar el elemento activo, lo que agiliza la construcción del retrato a partir de módulos tipográficos repetidos. El panel de capas ayuda a controlar la superposición de letras y a ordenar la imagen final.</p>
                 
-                <h3>Section 4 — Animación</h3>
+                <h3>Sección 5 — Animación</h3>
                 <p>La aplicación incorpora un sistema de animación por fotogramas con opciones como "+ Añadir Fotograma", "Duplicar Frame", "Eliminar Frame", control de <strong>Onion Skin</strong>, ajuste de <strong>FPS</strong> y reproducción mediante el botón "▶ Reproducir". El contador de estado ("Frame 1 / 1") indica la posición en la línea de tiempo.</p>
                 
-                <h3>Section 5 — Exportación</h3>
-                <p>La sección de exportación permite generar el resultado en varios formatos: <strong>GIF animado</strong>, <strong>frames JPG en archivo ZIP</strong> o <strong>frames PNG en ZIP</strong>. Además, opciones para mantener el <strong>fondo transparente</strong> (PNG), definir la velocidad de animación en <strong>FPS</strong> e incluir la imagen plantilla base en la exportación final.</p>
+                <h3>Sección 6 — Exportación</h3>
+                <p>La sección de exportación permite generar el resultado en varios formatos: <strong>GIF animado</strong>, <strong>frames JPG en archivo ZIP</strong> o <strong>frames PNG en ZIP</strong>. Además, incluye un selector avanzado de <strong>tamaño de exportación</strong>:</p>
+                <ul>
+                    <li><strong>Presets de tamaño</strong>: además del tamaño original del lienzo (800×600), se puede exportar en presets para redes sociales y gran formato: Full HD 16:9 (1920×1080), Vertical 9:16 (1080×1920, TikTok/Reels/Stories), Cuadrado 1:1 (1080×1080), Retrato 4:5 (1080×1350), Clásico 4:3 (1600×1200), UltraWide 21:9 (2560×1080) y 4K UHD (3840×2160). La composición se escala proporcionalmente y centrada, sin deformarse, respetando el color de fondo elegido.</li>
+                    <li><strong>Plantilla guía en exportación</strong>: la plantilla guía (si se incluye) se exporta con el mismo encuadre, proporción y zoom que se ve en pantalla.</li>
+                    <li>Opciones adicionales como mantener el <strong>fondo transparente</strong> (en PNG), definir la velocidad de animación en <strong>FPS</strong> e incluir la imagen plantilla base en la exportación final.</li>
+                </ul>
                 
                 <p class="guide-closing">El funcionamiento se basa en una lógica visual y conceptual: cuanto más fiel sea el retrato y más estrictamente se respeten las letras del nombre y apellidos, más sólida será la pieza final.</p>
             </div>
@@ -769,7 +765,6 @@
         </div>
     </div>
 
-    <!-- Modal Exportación Universal (GIF / ZIP) -->
     <div class="modal-overlay" id="export-modal">
         <div class="modal">
             <div class="modal-header">
@@ -834,11 +829,7 @@
         </div>
     </div>
 
-    <!-- Script de la Aplicación y Codificador GIF Vanilla -->
     <script>
-        // ==========================================
-        // 1. GESTIÓN DE TEMA OSCURO / CLARO
-        // ==========================================
         const btnThemeToggle = document.getElementById('btn-theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
 
@@ -862,9 +853,6 @@
             updateThemeIcon();
         });
 
-        // ==========================================
-        // 2. MOTOR GIF ENCODER NATIVO EN VANILLA JS
-        // ==========================================
         class VanillaGIFExporter {
             constructor(width, height, fps = 10) {
                 this.width = width;
@@ -1014,16 +1002,20 @@
             }
         }
 
-        // ==========================================
-        // 3. ESTADO Y ARQUITECTURA DE LA APLICACIÓN
-        // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
             const state = {
                 projectName: "TYPOFACE_Animacion",
                 width: 800,
                 height: 600,
                 bgColor: "#000000",
-                referenceImage: { img: null, src: null, opacity: 0.4, zoom: 100, visible: true },
+                referenceImage: { 
+                    img: null, 
+                    src: null, 
+                    opacity: 0.4, 
+                    visible: true, 
+                    zoom: 100, 
+                    lockScale: false 
+                },
                 frames: [{ id: 1, objects: [] }],
                 currentFrameIndex: 0,
                 selectedObjectId: null,
@@ -1059,7 +1051,6 @@
             const fontSelect = document.getElementById('font-family-select');
             const fontStyleSelect = document.getElementById('font-style-select');
 
-            // Función avanzada de carga de fuentes mediante Font Loading API (FontFace API)
             async function ensureFontLoaded(fontFamily, styleString = 'normal') {
                 let weight = '400';
                 let style = 'normal';
@@ -1079,7 +1070,6 @@
                     await document.fonts.load(fontTestString);
                     fontLoadStatus.style.display = 'none';
                 } catch (e) {
-                    console.warn(`[Typography] No se pudo precargar la fuente web "${fontFamily}":`, e);
                     fontLoadStatus.style.display = 'none';
                 }
             }
@@ -1121,7 +1111,6 @@
                     redraw();
                     renderFrames();
                 } catch (err) {
-                    console.error("Error al cargar fuente local:", err);
                     alert("Error al cargar el archivo de fuente.");
                     fontLoadStatus.style.display = 'none';
                     fontLoadStatus.textContent = 'Cargando...';
@@ -1226,18 +1215,25 @@
                 updateInspector();
             }
 
-            // ==========================================
-            // 4. MOTOR DE RENDERIZADO Y CONTROL DE PLANTILLA
-            // ==========================================
+            // FUNCIÓN HELPER CENTRALIZADA PARA ESCALA DE LETRAS
+            function getLetterScaleFactor() {
+                if (state.referenceImage.lockScale) {
+                    return state.referenceImage.zoom / 100;
+                }
+                return 1;
+            }
 
-            // Función reutilizable para calcular la transformación proporcional "contain" con zoom y centrado
-            function getRefImageTransform(img, targetWidth, targetHeight, zoomPercent) {
-                const baseScale = Math.min(targetWidth / img.width, targetHeight / img.height);
-                const finalScale = baseScale * (zoomPercent / 100);
+            // REUSABLE HELPER FUNCTION FOR REFERENCE IMAGE TRANSFORMATION
+            function getRefImageTransform() {
+                const img = state.referenceImage.img;
+                if (!img) return null;
+                const baseScale = Math.min(state.width / img.width, state.height / img.height);
+                const zoomFactor = state.referenceImage.zoom / 100;
+                const finalScale = baseScale * zoomFactor;
                 const w = img.width * finalScale;
                 const h = img.height * finalScale;
-                const x = (targetWidth - w) / 2;
-                const y = (targetHeight - h) / 2;
+                const x = (state.width - w) / 2;
+                const y = (state.height - h) / 2;
                 return { x, y, w, h };
             }
 
@@ -1252,14 +1248,14 @@
                 const showRef = renderForExport ? overrideRefShow : state.referenceImage.visible;
                 if (showRef && state.referenceImage.img) {
                     ctx.save();
-                    // Recorte por bordes si el zoom supera el 100%
                     ctx.beginPath();
                     ctx.rect(0, 0, state.width, state.height);
                     ctx.clip();
-
                     ctx.globalAlpha = state.referenceImage.opacity;
-                    const t = getRefImageTransform(state.referenceImage.img, state.width, state.height, state.referenceImage.zoom);
-                    ctx.drawImage(state.referenceImage.img, t.x, t.y, t.w, t.h);
+                    const transform = getRefImageTransform();
+                    if (transform) {
+                        ctx.drawImage(state.referenceImage.img, transform.x, transform.y, transform.w, transform.h);
+                    }
                     ctx.restore();
                 }
 
@@ -1278,12 +1274,21 @@
             }
 
             function drawObjects(objects, alphaMultiplier, isOnion) {
+                const scaleFactor = getLetterScaleFactor();
+                const centerX = state.width / 2;
+                const centerY = state.height / 2;
+
                 objects.forEach(obj => {
                     ctx.save();
                     ctx.globalAlpha = obj.opacity * alphaMultiplier;
-                    ctx.translate(obj.x, obj.y);
+
+                    const renderX = centerX + (obj.x - centerX) * scaleFactor;
+                    const renderY = centerY + (obj.y - centerY) * scaleFactor;
+                    const renderSize = obj.size * scaleFactor;
+
+                    ctx.translate(renderX, renderY);
                     ctx.rotate((obj.rotation * Math.PI) / 180);
-                    ctx.font = `${obj.style} ${obj.size}px "${obj.font}", sans-serif`;
+                    ctx.font = `${obj.style} ${renderSize}px "${obj.font}", sans-serif`;
                     ctx.fillStyle = isOnion ? '#3b82f6' : obj.color;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
@@ -1293,17 +1298,30 @@
             }
 
             function getObjectBounds(obj) {
-                ctx.font = `${obj.style} ${obj.size}px "${obj.font}", sans-serif`;
+                const scaleFactor = getLetterScaleFactor();
+                const renderSize = obj.size * scaleFactor;
+                ctx.font = `${obj.style} ${renderSize}px "${obj.font}", sans-serif`;
                 const metrics = ctx.measureText(obj.char);
-                const w = metrics.width || obj.size * 0.6;
-                const h = obj.size * 0.8;
+                const w = metrics.width || renderSize * 0.6;
+                const h = renderSize * 0.8;
                 return { w, h };
+            }
+
+            function getRenderedPosition(obj) {
+                const scaleFactor = getLetterScaleFactor();
+                const centerX = state.width / 2;
+                const centerY = state.height / 2;
+                return {
+                    x: centerX + (obj.x - centerX) * scaleFactor,
+                    y: centerY + (obj.y - centerY) * scaleFactor
+                };
             }
 
             function drawBoundingBoxAndHandles(obj) {
                 const { w, h } = getObjectBounds(obj);
+                const pos = getRenderedPosition(obj);
                 ctx.save();
-                ctx.translate(obj.x, obj.y);
+                ctx.translate(pos.x, pos.y);
                 ctx.rotate((obj.rotation * Math.PI) / 180);
 
                 ctx.strokeStyle = '#3b82f6';
@@ -1338,17 +1356,18 @@
                     const obj = currentFrame.objects.find(o => o.id === state.selectedObjectId);
                     if (obj) {
                         const { w, h } = getObjectBounds(obj);
+                        const pos = getRenderedPosition(obj);
                         const rad = (obj.rotation * Math.PI) / 180;
                         const cos = Math.cos(rad), sin = Math.sin(rad);
 
-                        const rotHandleX = obj.x + (0) * cos - (-h/2 - 28) * sin;
-                        const rotHandleY = obj.y + (0) * sin + (-h/2 - 28) * cos;
+                        const rotHandleX = pos.x + (0) * cos - (-h/2 - 28) * sin;
+                        const rotHandleY = pos.y + (0) * sin + (-h/2 - 28) * cos;
                         if (Math.hypot(mx - rotHandleX, my - rotHandleY) <= 10) {
                             dragMode = 'rotate'; return;
                         }
 
-                        const scaleHandleX = obj.x + (w/2 + 8) * cos - (h/2 + 8) * sin;
-                        const scaleHandleY = obj.y + (w/2 + 8) * sin + (h/2 + 8) * cos;
+                        const scaleHandleX = pos.x + (w/2 + 8) * cos - (h/2 + 8) * sin;
+                        const scaleHandleY = pos.y + (w/2 + 8) * sin + (h/2 + 8) * cos;
                         if (Math.hypot(mx - scaleHandleX, my - scaleHandleY) <= 10) {
                             dragMode = 'scale'; return;
                         }
@@ -1359,15 +1378,16 @@
                 for (let i = currentFrame.objects.length - 1; i >= 0; i--) {
                     const obj = currentFrame.objects[i];
                     const { w, h } = getObjectBounds(obj);
-                    const dx = mx - obj.x;
-                    const dy = my - obj.y;
+                    const pos = getRenderedPosition(obj);
+                    const dx = mx - pos.x;
+                    const dy = my - pos.y;
                     const rad = (-obj.rotation * Math.PI) / 180;
                     const localX = dx * Math.cos(rad) - dy * Math.sin(rad);
                     const localY = dx * Math.sin(rad) + dy * Math.cos(rad);
 
                     if (Math.abs(localX) <= w/2 + 8 && Math.abs(localY) <= h/2 + 8) {
                         foundId = obj.id;
-                        dragOffset = { x: mx - obj.x, y: my - obj.y };
+                        dragOffset = { x: mx - pos.x, y: my - pos.y };
                         break;
                     }
                 }
@@ -1391,17 +1411,25 @@
                 const obj = currentFrame.objects.find(o => o.id === state.selectedObjectId);
                 if (!obj) return;
 
+                const scaleFactor = getLetterScaleFactor();
+                const centerX = state.width / 2;
+                const centerY = state.height / 2;
+
                 if (dragMode === 'move') {
-                    obj.x = Math.round(mx - dragOffset.x);
-                    obj.y = Math.round(my - dragOffset.y);
+                    const targetRenderX = mx - dragOffset.x;
+                    const targetRenderY = my - dragOffset.y;
+                    obj.x = Math.round(centerX + (targetRenderX - centerX) / scaleFactor);
+                    obj.y = Math.round(centerY + (targetRenderY - centerY) / scaleFactor);
                 } else if (dragMode === 'rotate') {
-                    const angleRad = Math.atan2(my - obj.y, mx - obj.x);
+                    const pos = getRenderedPosition(obj);
+                    const angleRad = Math.atan2(my - pos.y, mx - pos.x);
                     let angleDeg = Math.round((angleRad * 180 / Math.PI) + 90);
                     if (angleDeg > 180) angleDeg -= 360;
                     obj.rotation = angleDeg;
                 } else if (dragMode === 'scale') {
-                    const dist = Math.hypot(mx - obj.x, my - obj.y);
-                    obj.size = Math.max(12, Math.round(dist * 1.5));
+                    const pos = getRenderedPosition(obj);
+                    const dist = Math.hypot(mx - pos.x, my - pos.y);
+                    obj.size = Math.max(12, Math.round((dist * 1.5) / scaleFactor));
                 }
 
                 updateInspectorInputs();
@@ -1415,9 +1443,6 @@
                 }
             });
 
-            // ==========================================
-            // 5. INSPECTOR Y CONTROLES DE EDICIÓN
-            // ==========================================
             function updateInspector() {
                 const currentFrame = state.frames[state.currentFrameIndex];
                 const obj = currentFrame.objects.find(o => o.id === state.selectedObjectId);
@@ -1489,15 +1514,13 @@
                 });
             }
 
-            // ==========================================
-            // 6. GESTIÓN DE PLANTILLA BASE Y ZOOM
-            // ==========================================
             const btnUploadRef = document.getElementById('btn-upload-ref');
             const refImgInput = document.getElementById('ref-img-input');
             const refOpacity = document.getElementById('ref-opacity');
             const opacityVal = document.getElementById('opacity-val');
             const refZoom = document.getElementById('ref-zoom');
             const zoomVal = document.getElementById('zoom-val');
+            const chkLockScale = document.getElementById('chk-lock-scale');
             const btnToggleRef = document.getElementById('btn-toggle-ref');
 
             btnUploadRef.addEventListener('click', () => refImgInput.click());
@@ -1510,9 +1533,12 @@
                     img.onload = () => {
                         state.referenceImage.img = img;
                         state.referenceImage.src = event.target.result;
+                        // Reset zoom and lockScale on new template load as requested
                         state.referenceImage.zoom = 100;
                         refZoom.value = 100;
                         zoomVal.textContent = '100%';
+                        state.referenceImage.lockScale = false;
+                        chkLockScale.checked = false;
                         redraw();
                     };
                     img.src = event.target.result;
@@ -1528,10 +1554,17 @@
             });
 
             refZoom.addEventListener('input', (e) => {
-                const val = parseInt(e.target.value, 10);
+                const val = e.target.value;
                 zoomVal.textContent = `${val}%`;
-                state.referenceImage.zoom = val;
+                state.referenceImage.zoom = parseInt(val, 10);
                 redraw();
+                renderFrames();
+            });
+
+            chkLockScale.addEventListener('change', (e) => {
+                state.referenceImage.lockScale = e.target.checked;
+                redraw();
+                renderFrames();
             });
 
             btnToggleRef.addEventListener('click', () => {
@@ -1540,9 +1573,6 @@
                 redraw();
             });
 
-            // ==========================================
-            // 7. MODAL DE GUÍA DEL USUARIO
-            // ==========================================
             const guideModal = document.getElementById('guide-modal');
             const btnOpenGuide = document.getElementById('btn-open-guide');
             const btnCloseGuideModal = document.getElementById('btn-close-guide-modal');
@@ -1555,9 +1585,6 @@
                 if (e.target === guideModal) guideModal.style.display = 'none';
             });
 
-            // ==========================================
-            // 8. TIMELINE Y ANIMACIÓN FRAME A FRAME
-            // ==========================================
             function renderFrames() {
                 framesContainer.innerHTML = '';
                 state.frames.forEach((frame, idx) => {
@@ -1581,12 +1608,20 @@
                             
                             tCtx.save();
                             tCtx.scale(48 / state.width, 36 / state.height);
+                            const scaleFactor = getLetterScaleFactor();
+                            const centerX = state.width / 2;
+                            const centerY = state.height / 2;
+
                             frame.objects.forEach(obj => {
-                                tCtx.font = `${obj.style} ${obj.size}px "${obj.font}", sans-serif`;
+                                const renderSize = obj.size * scaleFactor;
+                                const renderX = centerX + (obj.x - centerX) * scaleFactor;
+                                const renderY = centerY + (obj.y - centerY) * scaleFactor;
+
+                                tCtx.font = `${obj.style} ${renderSize}px "${obj.font}", sans-serif`;
                                 tCtx.fillStyle = obj.color;
                                 tCtx.textAlign = 'center';
                                 tCtx.textBaseline = 'middle';
-                                tCtx.fillText(obj.char, obj.x, obj.y);
+                                tCtx.fillText(obj.char, renderX, renderY);
                             });
                             tCtx.restore();
                         }
@@ -1638,9 +1673,6 @@
                 }
             });
 
-            // ==========================================
-            // 9. MÓDULOS DE EXPORTACIÓN (GIF y ZIP)
-            // ==========================================
             const exportModal = document.getElementById('export-modal');
             const progressBar = document.getElementById('export-progress-bar');
             const progressFill = document.getElementById('export-progress-fill');
@@ -1819,6 +1851,7 @@
             });
 
             ensureFontLoaded(fontSelect.value, fontStyleSelect.value);
+
             renderFrames();
             redraw();
         });
