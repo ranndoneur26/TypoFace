@@ -1152,6 +1152,9 @@
 
             const chkEnableNegative = document.getElementById('chk-enable-negative');
 
+            const btnUndo = document.getElementById('btn-undo');
+            const btnRedo = document.getElementById('btn-redo');
+
             chkEnableFade.addEventListener('change', (e) => {
                 fadeOptions.style.display = e.target.checked ? 'flex' : 'none';
             });
@@ -1224,6 +1227,15 @@
                 const family = fontSelect.value;
                 const styleOpt = fontStyleSelect.value;
                 await ensureFontLoaded(family, styleOpt);
+                if (state.selectedObjectId) {
+                    const currentFrame = state.frames[state.currentFrameIndex];
+                    const obj = currentFrame.objects.find(o => o.id === state.selectedObjectId);
+                    if (obj) {
+                        obj.font = family;
+                        obj.style = styleOpt;
+                        saveHistoryState();
+                    }
+                }
                 redraw();
             }
 
@@ -1331,12 +1343,116 @@
                 renderCharGrid();
             });
 
+            /**
+             * SISTEMA DE HISTORIAL (UNDO / REDO)
+             * Guarda una instantánea profunda e independiente de los datos de la aplicación.
+             */
             function saveHistoryState() {
-                const snapshot = JSON.stringify(state.frames);
+                const snapshot = {
+                    frames: JSON.parse(JSON.stringify(state.frames)),
+                    currentFrameIndex: state.currentFrameIndex,
+                    selectedObjectId: state.selectedObjectId
+                };
+                
+                // Trunca el historial futuro si estamos en una posición intermedia
                 state.history = state.history.slice(0, state.historyIndex + 1);
-                state.history.push(snapshot);
-                state.historyIndex++;
+                state.history.push(JSON.stringify(snapshot));
+                state.historyIndex = state.history.length - 1;
+                
+                updateHistoryUI();
             }
+
+            function undo() {
+                if (state.historyIndex > 0) {
+                    state.historyIndex--;
+                    restoreHistoryState(state.history[state.historyIndex]);
+                }
+            }
+
+            function redo() {
+                if (state.historyIndex < state.history.length - 1) {
+                    state.historyIndex++;
+                    restoreHistoryState(state.history[state.historyIndex]);
+                }
+            }
+
+            function restoreHistoryState(jsonString) {
+                const snapshot = JSON.parse(jsonString);
+                state.frames = snapshot.frames;
+                state.currentFrameIndex = Math.min(snapshot.currentFrameIndex, state.frames.length - 1);
+                state.selectedObjectId = snapshot.selectedObjectId;
+
+                // Sincroniza la vista y la UI tras restaurar
+                redraw();
+                renderFrames();
+                renderLayers();
+                updateInspector();
+                updateHistoryUI();
+            }
+
+            function updateHistoryUI() {
+                if (btnUndo) btnUndo.disabled = state.historyIndex <= 0;
+                if (btnRedo) btnRedo.disabled = state.historyIndex >= state.history.length - 1;
+            }
+
+            btnUndo.addEventListener('click', undo);
+            btnRedo.addEventListener('click', redo);
+
+            /**
+             * OPERACIÓN UNIFICADA DE BORRADO DE OBJETOS
+             * Utilizada de forma idéntica por el botón y la tecla Delete/Supr/Backspace.
+             */
+            function deleteSelectedObject() {
+                if (!state.selectedObjectId) return;
+                const currentFrame = state.frames[state.currentFrameIndex];
+                currentFrame.objects = currentFrame.objects.filter(o => o.id !== state.selectedObjectId);
+                state.selectedObjectId = null;
+                saveHistoryState();
+                redraw();
+                updateInspector();
+                renderLayers();
+            }
+
+            /**
+             * CONTROLLER GLOBAL DE EVENTOS DE TECLADO
+             */
+            window.addEventListener('keydown', (e) => {
+                const activeEl = document.activeElement;
+                const isEditingText = activeEl && (
+                    activeEl.tagName === 'INPUT' ||
+                    activeEl.tagName === 'TEXTAREA' ||
+                    activeEl.isContentEditable
+                );
+
+                // Control de atajosUndo/Redo (Ctrl+Z, Cmd+Z, Ctrl+Y, Cmd+Y, Shift+Ctrl+Z)
+                const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+                if (isCtrlOrCmd && !isEditingText) {
+                    if (e.key === 'z' || e.key === 'Z') {
+                        if (e.shiftKey) {
+                            e.preventDefault();
+                            redo();
+                        } else {
+                            e.preventDefault();
+                            undo();
+                        }
+                        return;
+                    } else if (e.key === 'y' || e.key === 'Y') {
+                        e.preventDefault();
+                        redo();
+                        return;
+                    }
+                }
+
+                // Eliminación mediante teclado
+                if (!isEditingText) {
+                    if (e.key === 'Delete' || e.key === 'Del' || e.key === 'Supr' || e.key === 'Backspace') {
+                        if (state.selectedObjectId) {
+                            e.preventDefault();
+                            deleteSelectedObject();
+                        }
+                    }
+                }
+            });
 
             function addCharacter(char) {
                 const currentFrame = state.frames[state.currentFrameIndex];
@@ -1738,6 +1854,20 @@
             }
 
             [propX, propY, propSize, propRotation, propColor, propOpacity].forEach(input => {
+                input.addEventListener('change', () => {
+                    const currentFrame = state.frames[state.currentFrameIndex];
+                    const obj = currentFrame.objects.find(o => o.id === state.selectedObjectId);
+                    if (!obj) return;
+                    obj.x = parseFloat(propX.value) || 0;
+                    obj.y = parseFloat(propY.value) || 0;
+                    obj.size = parseFloat(propSize.value) || 12;
+                    obj.rotation = parseFloat(propRotation.value) || 0;
+                    obj.color = propColor.value;
+                    obj.opacity = parseFloat(propOpacity.value);
+                    saveHistoryState();
+                    redraw();
+                });
+                
                 input.addEventListener('input', () => {
                     const currentFrame = state.frames[state.currentFrameIndex];
                     const obj = currentFrame.objects.find(o => o.id === state.selectedObjectId);
@@ -1752,13 +1882,7 @@
                 });
             });
 
-            document.getElementById('btn-delete-obj').addEventListener('click', () => {
-                if (!state.selectedObjectId) return;
-                const currentFrame = state.frames[state.currentFrameIndex];
-                currentFrame.objects = currentFrame.objects.filter(o => o.id !== state.selectedObjectId);
-                state.selectedObjectId = null;
-                saveHistoryState(); redraw(); updateInspector(); renderLayers();
-            });
+            document.getElementById('btn-delete-obj').addEventListener('click', deleteSelectedObject);
 
             document.getElementById('btn-duplicate-obj').addEventListener('click', () => {
                 if (!state.selectedObjectId) return;
@@ -2031,6 +2155,8 @@
                                 };
                                 img.src = data.referenceImage.src;
                             }
+                            state.history = [];
+                            state.historyIndex = -1;
                             saveHistoryState();
                             redraw();
                             renderFrames();
@@ -2265,6 +2391,7 @@
                 }
             });
 
+            // Inicialización del estado inicial de la historia
             saveHistoryState();
             redraw();
             renderFrames();
