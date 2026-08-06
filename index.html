@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TYPOFACE - Aplicación profesional de animación tipográfica frame a frame y exportador GIF">
+    <meta name="description" content="TYPOFACE puzzletering - El juego de puzzle tipográfico y animación de retratos. Crea caras expressivas resolviendo puzzles de letras frame a frame y exporta tus GIF.">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: blob: https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com;">
-    <title>TYPOFACE — make faces with Typography</title>
+    <title>TYPOFACE puzzletering — Juego de Puzzle Tipográfico y Retratos Visuales</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -391,13 +391,31 @@
         }
         .layer-item.selected { border-color: var(--accent); background: rgba(59, 130, 246, 0.08); }
 
-        .guide-content h3 {
-            font-size: 13px;
-            font-weight: 600;
+        .guide-content h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 10px 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .guide-content h2 {
+            font-size: 14px;
+            font-weight: 700;
             color: var(--accent);
-            margin: 14px 0 6px 0;
+            margin: 16px 0 8px 0;
             text-transform: uppercase;
             letter-spacing: 0.03em;
+        }
+
+        .guide-content h3 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 12px 0 6px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
         }
         .guide-content p {
             font-size: 12px;
@@ -509,8 +527,8 @@
 
     <header>
         <div class="brand">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
-            <h1><span>TYPOFACE</span> <span class="brand-tagline">make faces with Typography</span></h1>
+            <img src="Paul Verlaine.gif" alt="Paul Verlaine" style="height: 55px; width: auto; vertical-align: middle;">
+            <h1><span>TYPOFACE</span> puzzletering <span class="brand-tagline">make faces with Typography</span></h1>
             <input type="text" id="project-name" class="project-input" value="Animacion_Tipografica_01">
         </div>
 
@@ -687,17 +705,17 @@
                     <button class="btn" id="btn-del-frame" style="color: var(--danger);">Eliminar Frame</button>
                 </div>
                 <div class="toolbar-group" style="gap: 4px;">
-                    <input type="text" id="name-filter-input" class="input-custom text-xs" placeholder="Introduce nombre y apellido/s" style="width: 210px;">
+                    <input type="text" id="name-filter-input" class="input-custom text-xs" placeholder="Introduce nombre y apellido/s..o sólo nombre" style="width: 270px;">
                     <button class="btn" id="btn-clear-name-filter" title="Limpiar filtro" style="padding: 6px 8px;">✕</button>
                 </div>
                 <div class="toolbar-group">
                     <label class="text-xs text-muted flex items-center gap-2">
                         <input type="checkbox" id="chk-onion" checked> Onion Skin (Transparencia)
                     </label>
-                    <span style="width: 1px; height: 16px; background: var(--border-color);"></span>
+                    <span style="width: 4px; height: 18px; background: var(--border-color);"></span>
                     <label class="text-xs text-muted flex items-center gap-2">
                         FPS:
-                        <input type="number" id="fps-input" value="10" min="1" max="30" style="width: 45px;" class="input-custom">
+                        <input type="number" id="fps-input" value="10" min="1" max="30" style="width: 65px;" class="input-custom">
                     </label>
                     <button class="btn" id="btn-play">▶ Reproducir</button>
                     <span class="text-xs text-muted" id="frame-counter">Frame 1 / 1</span>
@@ -708,80 +726,65 @@
     </div>
     
     <footer>
-        Idea Xinanimodelacra, development by <a href="https://www.marcxicola.com" target="_blank" rel="noopener noreferrer">www.marcxicola.com</a>[cite: 1]
+        Idea <a href="https://giphy.com/xdelacra" target="_blank" rel="noopener noreferrer">Xinanimodelacra</a>, © 2026, development by <a href="https://www.marcxicola.com" target="_blank" rel="noopener noreferrer">www.marcxicola.com</a>
     </footer>
 
     <div class="modal-overlay" id="guide-modal">
         <div class="modal" style="width: 640px; max-width: 95vw;">
             <div class="modal-header">
-                <span>Guía del Usuario — Manual Práctico de TYPOFACE</span>
+                <span>Guía del Usuario — Manual Práctico de TYPOFACE puzzletering</span>
                 <button class="btn" id="btn-close-guide-modal" style="padding:2px 8px;">✕</button>
             </div>
             <div class="modal-body guide-content" style="max-height: 75vh; overflow-y: auto;">
-                <p><strong>TypoFACE</strong> es una aplicación web profesional de animación tipográfica frame a frame y retrato experimental orientada a la creación de composiciones visuales faciales y artísticas compuestas exclusivamente mediante caracteres tipográficos.</p>
+                <h1>TYPOFACE Puzzletering: El Juego Creativo de Puzzles Tipográficos</h1>
+                <p><strong>TYPOFACE puzzletering</strong> es una plataforma y juego interactivo de animación tipográfica frame a frame. Combina la diversión del rompecabezas visual con la creación artística de retratos expresivos, compuestos exclusivamente a partir de caracteres y letras estilizadas.</p>
                 
-                <h3>1. Introducción y Restricción Tipográfica por Identidad</h3>
-                <p>La esencia de TYPOFACE radica en la fidelidad identitaria: la composición de un rostro debe construirse de manera manual utilizando únicamente las letras presentes en el nombre y los apellidos de la persona retratada. Esta restricción creativa obliga a reutilizar, escalar y rotar inteligentemente los glifos autorizados.</p>
+                <h2>Reglas del Juego Tipográfico y Restricciones de Identidad</h2>
+                <p>El desafío central del juego consiste en componer un rostro expresivo utilizando de forma estricta las letras que componen el nombre y apellidos de la persona retratada. Esta restricción creativa te obliga a rotar, escalar y encajar de forma ingeniosa cada glifo autorizado como si fuera una pieza de puzle única.</p>
                 
-                <h3>2. Biblioteca Tipográfica y Fuentes Personalizadas</h3>
+                <h2>Mecánicas de Juego y Herramientas del Canvas</h2>
+                <h3>1. Biblioteca de Tipografías y Fuentes Personalizadas</h3>
                 <ul>
-                    <li><strong>Google Fonts y Fuentes del Sistema</strong>: Acceso integrado a fuentes serif y editoriales de alta calidad (Playfair Display, EB Garamond, Cormorant Garamond, Libre Baskerville, Cinzel, Merriweather, Times New Roman, Georgia, etc.).</li>
-                    <li><strong>Carga de Fuentes Locales</strong>: Posibilidad de incorporar archivos de fuentes propios en formatos estándar <code>.otf</code>, <code>.ttf</code>, <code>.woff</code> o <code>.woff2</code> mediante la API del navegador.</li>
-                    <li><strong>Control de Estilos y Pesos</strong>: Selector dinámico para alternar entre pesos regulares, itálicos, negritas y negritas itálicas.</li>
+                    <li><strong>Fuentes Web y del Sistema</strong>: Acceso inmediato a tipografías elegantes (Playfair Display, EB Garamond, Cormorant Garamond, Libre Baskerville, Cinzel, Merriweather, Times New Roman, Georgia, etc.).</li>
+                    <li><strong>Carga de Fuentes Propias</strong>: Incorpora tus propias piezas al juego subiendo archivos de fuentes en formato <code>.otf</code>, <code>.ttf</code>, <code>.woff</code> o <code>.woff2</code>.</li>
+                    <li><strong>Pesos y Estilos Diversos</strong>: Cambia entre estilos regulares, itálicos y negritas para dar textura al retrato.</li>
                 </ul>
 
-                <h3>3. Buscador, Selector de Caracteres y Filtro por Identidad</h3>
+                <h3>2. Filtro de Identidad y Buscador de Glifos</h3>
                 <ul>
-                    <li><strong>Buscador en Tiempo Real</strong>: Permite filtrar rápidamente cualquier símbolo, número o letra dentro de la parrilla de caracteres disponibles.</li>
-                    <li><strong>Filtro Dinámico por Nombre y Apellidos</strong>: Al introducir el nombre y apellidos en el campo correspondiente (situado en la barra de la línea de tiempo), la aplicación analiza la identidad, desactiva automáticamente los glifos no autorizados y resalta únicamente las letras permitidas por la regla principal.</li>
+                    <li><strong>Filtro Dinámico por Nombre</strong>: Escribe un nombre en el campo de la línea de tiempo y el sistema bloqueará automáticamente los caracteres no permitidos, resaltando solo tus piezas de juego autorizadas.</li>
+                    <li><strong>Buscador Rápido</strong>: Encuentra de forma instantánea cualquier símbolo o letra dentro de la plantilla.</li>
                 </ul>
 
-                <h3>4. Lienzo, Plantilla Guía y Controles del Canvas</h3>
-                <p>La barra de herramientas flotante del lienzo (<code>.canvas-toolbar</code>) agrupa todas las utilidades visuales de apoyo:</p>
+                <h3>3. Plantillas Guía, Lienzo y Controles Visuales</h3>
                 <ul>
-                    <li><strong>Cargar Plantilla Guía</strong>: Permite subir cualquier imagen de referencia fotográfica para calcar y reconstruir el rostro.</li>
-                    <li><strong>Opacidad y Zoom de la Guía</strong>: Ajuste preciso de la visibilidad y escala de la imagen de referencia sobre el área de trabajo.</li>
-                    <li><strong>Encajar con Tamaño</strong>: Opción para vincular proporcionalmente la escala de las letras tipográficas al factor de zoom de la plantilla guía.</li>
-                    <li><strong>Fondo Transparente y Selector de Color</strong>: Permite alternar un fondo transparente en el lienzo o definir cualquier color sólido de fondo mediante el selector integrado.</li>
+                    <li><strong>Imagen de Referencia</strong>: Sube una foto base para usarla como molde y encajar las letras sobre los rasgos faciales.</li>
+                    <li><strong>Ajustes de Opacidad y Zoom</strong>: Controla la visibilidad de la imagen de fondo para esculpir las facciones con precisión.</li>
+                    <li><strong>Escalado Vinculado</strong>: Sincroniza el tamaño de las letras con el zoom de la plantilla guía.</li>
+                    <li><strong>Control de Fondo</strong>: Alterna entre fondos transparentes o un color sólido personalizado.</li>
                 </ul>
 
-                <h3>5. Inspector de Propiedades y Panel de Capas</h3>
+                <h2>Edición, Timeline y Exportación de Animaciones</h2>
+                <h3>1. Inspector Geométrico y Capas</h3>
                 <ul>
-                    <li><strong>Manipulación Directa y Tiradores</strong>: Selección de letras mediante clic o arrastre directo en el lienzo, con tiradores geométricos para rotar, escalar y mover elementos con precisión milimétrica.</li>
-                    <li><strong>Inspector Numérico</strong>: Control exacto de posición (X, Y), tamaño en píxeles, ángulo de rotación exacto, color tipográfico personalizado y opacidad por objeto.</li>
-                    <li><strong>Duplicación y Eliminación</strong>: Opciones rápidas para clonar elementos tipográficos existentes o borrarlos de la composición.</li>
-                    <li><strong>Gestión de Capas</strong>: Panel dedicado para visualizar la jerarquía de los caracteres presentes en el fotograma actual y seleccionarlos de forma individual.</li>
+                    <li><strong>Controles Directos</strong>: Arrastra, gira y escala cualquier letra directamente en el lienzo.</li>
+                    <li><strong>Precisión Numérica</strong>: Ajusta coordenadas (X, Y), ángulos exactos de rotación, escalas, color y transparencias.</li>
+                    <li><strong>Panel de Capas</strong>: Organiza la jerarquía de las piezas tipográficas del fotograma actual.</li>
                 </ul>
 
-                <h3>6. Línea de Tiempo y Animación Fotograma a Fotograma</h3>
+                <h3>2. Animación Frame a Frame y Onion Skin</h3>
                 <ul>
-                    <li><strong>Gestión de Fotogramas</strong>: Creación, duplicación y eliminación de frames secuenciales para construir animaciones fluidas.</li>
-                    <li><strong>Onion Skin (Piel de Cebolla)</strong>: Visualización semitransparente del fotograma anterior superpuesta en el lienzo para facilitar la transición y el movimiento de los caracteres.</li>
-                    <li><strong>Control de Reproducción y FPS</strong>: Ajuste de la velocidad de animación de 1 a 30 FPS y reproducción en bucle directo con vista previa en miniatura de cada fotograma.</li>
+                    <li><strong>Creación de Secuencias</strong>: Añade, duplica o elimina fotogramas para dar vida y movimiento a la cara.</li>
+                    <li><strong>Piel de Cebolla (Onion Skin)</strong>: Muestra el fotograma anterior transparente para facilitar la continuidad del movimiento.</li>
+                    <li><strong>Control de Tiempo</strong>: Configura la velocidad de reproducción de 1 a 30 FPS.</li>
                 </ul>
 
-                <h3>7. Gestión de Proyectos y Preferencias de Interfaz</h3>
+                <h3>3. Exportación de Resultados (GIF, ZIP y Efectos)</h3>
                 <ul>
-                    <li><strong>Tema Claro / Oscuro</strong>: Alternancia de interfaz optimizada con guardado automático de preferencias en <code>localStorage</code>.</li>
-                    <li><strong>Guardar y Abrir JSON</strong>: Funcionalidad completa para exportar el proyecto entero a un archivo de datos <code>.json</code> e importarlo posteriormente para continuar editándolo.</li>
-                    <li><strong>Historial de Acciones</strong>: Sistema robusto de Deshacer (<code>Ctrl+Z</code>) y Rehacer (<code>Ctrl+Shift+Z</code>).</li>
+                    <li><strong>Múltiples Formatos y Resoluciones</strong>: Exporta tu proyecto a GIF animado o a secuencias JPG/PNG comprimidas en ZIP, adaptadas a redes sociales (1:1, 9:16, 16:9, 4K, etc.).</li>
+                    <li><strong>Efectos Especiales Integrados</strong>: Incluye fundidos (Fade/Crossfade), desenfoque de movimiento (Motion Blur), estética Pixel Art i modo negativo/inversión de color.</li>
                 </ul>
-
-                <h3>8. Sistema Avanzado de Exportación (GIF y ZIP)</h3>
-                <ul>
-                    <li><strong>Formatos Múltiples</strong>: Exportación directa a GIF animado (con codificador LZW nativo integrado) o paquetes comprimidos en ZIP conteniendo secuencias de imágenes JPG o PNG (con soporte para mantener fondo transparente).</li>
-                    <li><strong>Selectores de Resolución Profesional</strong>: Opciones de tamaño adaptadas a múltiples formatos y pantallas (Original 800x600, Full HD 16:9, Vertical 9:16 para TikTok/Reels/Stories, Cuadrado 1:1 para Instagram, 4:5, 4K UHD, UltraWide, etc.).</li>
-                    <li><strong>Efectos Especiales de Animación y Postprocesado</strong>:
-                        <ul>
-                            <li>Transiciones de Fundido (Fade / Crossfade) entre fotogramas con selector de pasos intermedios.</li>
-                            <li>Desenfoque de movimiento (Motion Blur) con diferentes intensidades.</li>
-                            <li>Efecto Pixel Art (Pixelation) con factores de escala ajustables (2x, 4x, 8x).</li>
-                            <li>Efecto Negativo / Inversión de colores.</li>
-                            <li>Opción para incluir o descartar la plantilla guía base en la exportación final.</li>
-                        </ul>
-                    </li>
-                </ul>
-                <p class="guide-closing">TYPOFACE combina el diseño gráfico vectorial y tipográfico con la animación secuencial, ofreciendo una herramienta creativa robusta, autocontenida y profesional para artistas visuales y diseñadores.</p>
+                <p class="guide-closing">TYPOFACE puzzletering convierte la tipografía en un juego de rompecabezas fascinante, donde la creatividad y las restricciones tipográficas se unifican para crear arte animado inolvidable.</p>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="btn-close-guide-footer">Cerrar Guía</button>
@@ -798,9 +801,12 @@
             <div class="modal-body">
                 <div class="control-section">
                     <label class="control-label">Formato de Salida</label>
-                    <div class="flex gap-2" style="margin-bottom: 12px;">
+                    <div class="flex gap-2" style="margin-bottom: 12px; flex-wrap: wrap;">
                         <label class="text-xs flex items-center gap-2 cursor-pointer">
                             <input type="radio" name="export-type" value="gif" checked> GIF Animado
+                        </label>
+                        <label class="text-xs flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="export-type" value="gif-pingpong"> GIF Ping-Pong
                         </label>
                         <label class="text-xs flex items-center gap-2 cursor-pointer">
                             <input type="radio" name="export-type" value="jpg"> Frames JPG (.zip)
@@ -1480,20 +1486,23 @@
                 oCtx.imageSmoothingEnabled = true;
                 oCtx.imageSmoothingQuality = 'high';
 
+                const frameA = typeof frameIdxA === 'object' ? frameIdxA : state.frames[frameIdxA];
+                const frameB = typeof frameIdxB === 'object' ? frameIdxB : state.frames[frameIdxB];
+
                 const alphaA = fadeEnabled ? (1 - t) : (t === 0 ? 1.0 : (1 - t));
                 if (alphaA > 0.001) {
                     oCtx.save();
                     oCtx.globalAlpha = alphaA;
-                    drawObjectsToContext(oCtx, state.frames[frameIdxA].objects);
+                    drawObjectsToContext(oCtx, frameA.objects);
                     oCtx.restore();
                 }
 
-                if (t > 0 && frameIdxB !== frameIdxA) {
+                if (t > 0 && frameB !== frameA) {
                     const alphaB = fadeEnabled ? t : t;
                     if (alphaB > 0.001) {
                         oCtx.save();
                         oCtx.globalAlpha = alphaB;
-                        drawObjectsToContext(oCtx, state.frames[frameIdxB].objects);
+                        drawObjectsToContext(oCtx, frameB.objects);
                         oCtx.restore();
                     }
                 }
@@ -2098,7 +2107,7 @@
                 const offsetX = (destW - scaledW) / 2;
                 const offsetY = (destH - scaledH) / 2;
 
-                if (exportType === 'gif') {
+                if (exportType === 'gif' || exportType === 'gif-pingpong') {
                     statusText.textContent = `Procesando fotogramas con transiciones (${destW}x${destH})...`;
                     setTimeout(() => {
                         const exporter = new VanillaGIFExporter(destW, destH, fps);
@@ -2118,9 +2127,13 @@
                             maxBlur = Math.max(2, baseDim * factor);
                         }
 
-                        const useTransitions = (fadeEnabled || blurEnabled) && state.frames.length > 1;
+                        const exportFrames = exportType === 'gif-pingpong'
+                            ? [...state.frames, ...state.frames.slice().reverse()]
+                            : state.frames;
+
+                        const useTransitions = (fadeEnabled || blurEnabled) && exportFrames.length > 1;
                         const K = useTransitions ? fadeSteps : 0;
-                        const N = state.frames.length;
+                        const N = exportFrames.length;
 
                         let totalFrames = 0;
                         for (let f = 0; f < N; f++) {
@@ -2137,7 +2150,7 @@
                         offCtx.imageSmoothingQuality = 'high';
 
                         for (let f = 0; f < N; f++) {
-                            renderFrameToTarget(offCtx, offCanvas, f, f, 0, fadeEnabled, blurEnabled, maxBlur, includeRef, false);
+                            renderFrameToTarget(offCtx, offCanvas, exportFrames[f], exportFrames[f], 0, fadeEnabled, blurEnabled, maxBlur, includeRef, false);
                             destCtx.fillStyle = state.bgColor;
                             destCtx.fillRect(0, 0, destW, destH);
                             destCtx.drawImage(offCanvas, offsetX, offsetY, scaledW, scaledH);
@@ -2151,7 +2164,7 @@
                                 const nextF = (f + 1) % N;
                                 for (let s = 1; s <= K; s++) {
                                     const t = s / (K + 1);
-                                    renderFrameToTarget(offCtx, offCanvas, f, nextF, t, fadeEnabled, blurEnabled, maxBlur, includeRef, false);
+                                    renderFrameToTarget(offCtx, offCanvas, exportFrames[f], exportFrames[nextF], t, fadeEnabled, blurEnabled, maxBlur, includeRef, false);
                                     destCtx.fillStyle = state.bgColor;
                                     destCtx.fillRect(0, 0, destW, destH);
                                     destCtx.drawImage(offCanvas, offsetX, offsetY, scaledW, scaledH);
